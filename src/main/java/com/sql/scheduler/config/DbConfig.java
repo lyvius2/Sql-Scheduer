@@ -25,7 +25,7 @@ public class DbConfig {
 		return new DataSourceTransactionManager(dataSource());
 	}
 
-	@Bean(name = "jobJdbcTemplete")
+	@Bean(name = "jobJdbcTemplate")
 	public NamedParameterJdbcTemplate jdbcTemplate() {
 		return new NamedParameterJdbcTemplate(dataSource());
 	}
