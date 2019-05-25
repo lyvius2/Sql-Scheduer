@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"job_seq", "group_seq"}))
+@Table(indexes = {@Index(name = "index_job_seq", columnList = "job_seq, group_seq", unique = true)})
 @Data
 public class Job {
 	@Id
@@ -23,6 +23,7 @@ public class Job {
 	@NotNull
 	private String conditional;
 
+	private String testmode;
 	private int orderby;
 
 	@Temporal(TemporalType.TIMESTAMP)

@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table
+@Table(indexes = {@Index(name = "index_job_history_comment", columnList = "comment", unique = false)})
 @Data
 public class JobHistory {
 	@Id

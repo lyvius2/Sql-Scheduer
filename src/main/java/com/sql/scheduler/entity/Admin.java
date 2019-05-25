@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"username"}))
+@Table(indexes = {@Index(name = "index_admin_username", columnList = "username", unique = true)})
 @Data
 public class Admin implements Serializable {
 	@Id

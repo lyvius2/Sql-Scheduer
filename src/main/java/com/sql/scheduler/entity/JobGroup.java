@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
-@Table
+@Table(indexes = {@Index(name = "index_job_group_seq", columnList = "group_seq", unique = true)})
 @Data
 public class JobGroup {
 	@Id
