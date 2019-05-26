@@ -23,4 +23,8 @@ public class GroupService {
 	public Optional<JobGroup> findOne(int groupSeq) {
 		return repository.findById(groupSeq);
 	}
+
+	public JobGroup save(JobGroup jobGroup) {
+		return repository.save(jobGroup);
+	}
 }

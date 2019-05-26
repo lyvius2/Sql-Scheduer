@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+	<div th:fragment="modal" >
+		<div class="modal fade" id="registerJobGroup" tabindex="-1" role="dialog" aria-labelledby="registerJobGroupLabel" aria-hidden="true">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<form th:action="@{/group}" th:method="post">
+						<div class="modal-header">
+							<h5 class="modal-title" id="registerJobGroupLabel">작업그룹 등록</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>
+						<div class="modal-body">
+							<div class="row">
+								<div class="col-md-8 mb-3">
+									<label for="groupName" class="col-form-label">작업그룹명</label>
+									<input type="text" class="form-control" id="groupName" name="groupName"/>
+								</div>
+								<div class="col-md-4 mb-3">
+									<label for="dbms" class="col-form-label">DBMS</label>
+									<select name="dbms" id="dbms" class="form-control">
+										<option th:each="dbms : ${dbmsList}" th:value="${dbms}" th:text="${dbms.dbms}"></option>
+									</select>
+								</div>
+								<div class="col-md-12 mb-3">
+									<label for="dbUrl" class="col-form-label">DB접속 URL</label>
+									<input type="text" class="form-control" id="dbUrl" name="dbUrl"/>
+								</div>
+								<div class="col-md-6 mb-3">
+									<label for="dbUsername" class="col-form-label">로그인 ID</label>
+									<input type="text" class="form-control" id="dbUsername" name="dbUsername"/>
+								</div>
+								<div class="col-md-6 mb-3">
+									<label for="dbPassword" class="col-form-label">암호</label>
+									<input type="password" class="form-control" id="dbPassword" name="dbPassword"/>
+								</div>
+							</div>
+							<div class="form-group row">
+								<div class="col-md-3 mb-3">실행주기(Cron)</div>
+								<div class="col-md-3 mb-3">
+									<input type="text" class="form-control" id="cron" name="cron"/>
+								</div>
+							</div>
+							<div class="form-group row">
+								<div class="col-md-3 mb-3">결과 메일링</div>
+								<div class="col-md-3 mb-3">
+									<div class="form-check">
+										<input type="checkbox" class="form-check-input" name="mailing" checked="checked"/>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+							<button type="submit" class="btn btn-primary">저장</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

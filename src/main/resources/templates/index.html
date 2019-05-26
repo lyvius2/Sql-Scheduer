@@ -14,6 +14,11 @@
 			</div>
 		</div>
 
+		<div class="text-right">
+			<button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#registerJobGroup">작업그룹 등록</button>
+		</div>
+		<div th:include="layout/modal :: modal"></div>
+
 		<div class="my-3 p-3 bg-white rounded shadow-sm">
 			<h6 class="border-bottom border-gray pb-2 mb-0">Recent updates</h6>
 			<div class="media text-muted pt-3">
@@ -80,5 +85,7 @@
 		</div>
 	</main>
 	<script layout:fragment="script"></script>
+
+
 </body>
 </html>

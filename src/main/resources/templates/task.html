@@ -13,7 +13,7 @@
 					<span class="badge badge-secondary badge-pill">3</span>
 				</h4>
 				<ul class="list-group mb-3">
-					<li class="list-group-item d-flex justify-content-between lh-condensed" th:each="jobunit :${taskSequence}">
+					<li class="list-group-item d-flex justify-content-between lh-condensed" th:each="jobunit : ${taskSequence}">
 						<div>
 							<h6 class="my-0" th:text="${jobunit.targetTable}"></h6>
 							<small class="text-muted" th:text="${jobunit.jobDescription}"></small>

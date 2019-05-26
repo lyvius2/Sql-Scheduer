@@ -1,6 +1,7 @@
 package com.sql.scheduler.controller;
 
 import com.google.gson.Gson;
+import com.sql.scheduler.code.DBMS;
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobGroup;
 import com.sql.scheduler.service.GroupService;
@@ -24,8 +25,21 @@ public class TaskController {
 	private TaskService taskService;
 
 	@RequestMapping(value = "/")
-	public String index() {
+	public String index(Model model) {
+		model.addAttribute("groupList", groupService.findAll());
+		model.addAttribute("dbmsList", DBMS.values());
 		return "index";
+	}
+
+	@RequestMapping(value = "/group", method = RequestMethod.GET)
+	public String group() {
+		return "redirect:../";
+	}
+
+	@RequestMapping(value = "/group", method = RequestMethod.POST)
+	public String group(@ModelAttribute JobGroup jobGroup) {
+		groupService.save(jobGroup);
+		return "redirect:/group";
 	}
 
 	@RequestMapping(value = {"/task/{seq}", "/task"}, method = RequestMethod.GET)

@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(indexes = {@Index(name = "index_job_groupSeq", columnList = "groupSeq", unique = true)})
@@ -41,4 +42,8 @@ public class JobGroup {
 	private Date modDt;
 
 	private String modUsername;
+
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "groupSeq")
+	private List<Job> job;
 }
