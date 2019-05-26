@@ -13,12 +13,12 @@ public class JobHistory {
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int seq;
 
-	private int group_seq;
-	private int job_seq;
+	private int groupSeq;
+	private int jobSeq;
 	private String username;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date dt;
+	private Date dt = new Date();
 
 	private String comment;
 }

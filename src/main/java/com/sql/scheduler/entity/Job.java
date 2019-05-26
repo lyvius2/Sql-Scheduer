@@ -3,36 +3,41 @@ package com.sql.scheduler.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
-@Table(indexes = {@Index(name = "index_job_seq", columnList = "job_seq, group_seq", unique = true)})
+@Table(indexes = {@Index(name = "index_jobSeq", columnList = "jobSeq, groupSeq", unique = true)})
 @Data
 public class Job {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
-	private int job_seq;
+	private int jobSeq;
 
-	@NotNull
-	private int group_seq;
-
-	private String job_name;
+	private int groupSeq;
+	private String targetTable;
+	private String jobDescription;
 	private String performing;
-
-	@NotNull
 	private String conditional;
 
-	private String testmode;
-	private int orderby;
+	@Size(max = 1)
+	private String testMode;
+
+	@Size(max = 1)
+	private String use = "Y";
+
+	@Column(name = "task_seq")
+	private int taskSeq;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date reg_dt;
+	private Date regDt = new Date();
 
-	private String reg_username;
+	private String regUsername;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date mod_dt;
+	private Date modDt;
 
-	private String mod_username;
+	private String modUsername;
 }

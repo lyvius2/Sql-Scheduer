@@ -27,15 +27,15 @@ public class Admin implements Serializable {
 	private AdminType type;
 
 	@JsonIgnore
-	private String cert_key;
+	private String certKey;
 
 	private String dept;
 
 	@Column(insertable = false)
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date reg_dt;
+	private Date regDt = new Date();
 
 	@Column(insertable = false)
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date mod_dt;
+	private Date modDt;
 }

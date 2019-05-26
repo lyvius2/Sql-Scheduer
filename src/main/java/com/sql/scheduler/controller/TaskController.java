@@ -2,37 +2,49 @@ package com.sql.scheduler.controller;
 
 import com.google.gson.Gson;
 import com.sql.scheduler.entity.Job;
-import com.sql.scheduler.service.ExecuteJobService;
+import com.sql.scheduler.entity.JobGroup;
+import com.sql.scheduler.service.GroupService;
+import com.sql.scheduler.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @Controller
 public class TaskController {
-
 	@Autowired
 	private Gson gson;
 
 	@Autowired
-	private ExecuteJobService service;
+	private GroupService groupService;
+
+	@Autowired
+	private TaskService taskService;
 
 	@RequestMapping(value = "/")
 	public String index() {
 		return "index";
 	}
 
-	@RequestMapping(value = "/task", method = RequestMethod.GET)
-	public String task(Model model) {
+	@RequestMapping(value = {"/task/{seq}", "/task"}, method = RequestMethod.GET)
+	public String task(@PathVariable Optional<Integer> seq, @RequestParam("group") int groupSeq, Model model) {
+		Optional<JobGroup> group = groupService.findOne(groupSeq);
+		if (group.isPresent()) model.addAttribute("group", group.get());
+
+		if (seq.isPresent()) model.addAttribute("job", taskService.findOne(seq.get()));
+		else model.addAttribute("job", new Job());
+
+		model.addAttribute("taskSequence", taskService.findAllByGroupSeq(groupSeq));
 		return "task";
 	}
 
 	@RequestMapping(value = "/task", method = RequestMethod.POST)
-	@ResponseBody
 	public String task(@ModelAttribute Job job) {
-		return gson.toJson(job);
+		job.setGroupSeq(1);
+		if (job.getTaskSeq() == 0) job.setTaskSeq(taskService.countByGroupSeq(1) + 1);
+		Job result = taskService.save(job);
+		return String.format("redirect:/task/%s", result.getJobSeq());
 	}
 }

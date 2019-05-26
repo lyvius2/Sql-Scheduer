@@ -5,37 +5,40 @@ import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
-@Table(indexes = {@Index(name = "index_job_group_seq", columnList = "group_seq", unique = true)})
+@Table(indexes = {@Index(name = "index_job_groupSeq", columnList = "groupSeq", unique = true)})
 @Data
 public class JobGroup {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
-	private int group_seq;
+	private int groupSeq;
 
-	private String group_name;
+	private String groupName;
 
 	@Enumerated(EnumType.STRING)
 	private DBMS dbms;
 
-	@NotNull
-	private String db_url;
-
-	private String db_username;
-	private String db_password;
-
-	@NotNull
+	private String dbUrl;
+	private String dbUsername;
+	private String dbPassword;
 	private String cron;
 
+	@Size(max = 1)
+	private String mailing;
+
+	@Size(max = 1)
+	private String use = "Y";
+
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date reg_dt;
+	private Date regDt = new Date();
 
-	private String reg_username;
+	private String regUsername;
 
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date mod_dt;
+	private Date modDt;
 
-	private String mod_username;
+	private String modUsername;
 }
