@@ -24,8 +24,10 @@ public class GroupService {
 		return (ArrayList<JobGroup>)repository.findAll();
 	}
 
-	public Optional<JobGroup> findOne(int groupSeq) {
-		return repository.findById(groupSeq);
+	public JobGroup findOne(int groupSeq) {
+		Optional<JobGroup> optionalJobGroup = repository.findById(groupSeq);
+		if (optionalJobGroup.isPresent()) return optionalJobGroup.get();
+		else return null;
 	}
 
 	public JobGroup save(JobGroup jobGroup) throws Exception {

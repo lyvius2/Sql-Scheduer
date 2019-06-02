@@ -17,13 +17,6 @@ public class SchedulerController {
 	@Autowired
 	private MailService mailService;
 
-	@RequestMapping(value = "/startSchedule")
-	@ResponseBody
-	public String test() throws SchedulerException {
-		schedulerService.startSchedule();
-		return "Success!";
-	}
-
 	@RequestMapping(value = "/sendTestEmail")
 	@ResponseBody
 	public String testMail() {

@@ -5,6 +5,7 @@ import com.sql.scheduler.code.DBMS;
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobGroup;
 import com.sql.scheduler.service.GroupService;
+import com.sql.scheduler.service.SchedulerService;
 import com.sql.scheduler.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ public class TaskController {
 	@Autowired
 	private TaskService taskService;
 
+	@Autowired
+	private SchedulerService schedulerService;
+
 	@RequestMapping(value = "/")
 	public String index(Model model) {
 		model.addAttribute("groupList", groupService.findAll());
@@ -48,24 +52,21 @@ public class TaskController {
 
 	@RequestMapping(value = {"/task/{seq}", "/task"}, method = RequestMethod.GET)
 	public String task(@PathVariable Optional<Integer> seq, @RequestParam("group") int groupSeq, Model model) {
-		Optional<JobGroup> group = groupService.findOne(groupSeq);
-		if (group.isPresent()) {
-			model.addAttribute("group", group.get());
-		} else {
-			return "redirect:../";
-		}
+		JobGroup jobGroup = groupService.findOne(groupSeq);
+		if (jobGroup != null) model.addAttribute("group", jobGroup);
+		else return "redirect:../";
 
 		if (seq.isPresent()) model.addAttribute("job", taskService.findOne(seq.get()));
 		else model.addAttribute("job", new Job());
-
 		model.addAttribute("taskSequence", taskService.findAllByGroupSeq(groupSeq));
 		return "task";
 	}
 
 	@RequestMapping(value = "/task", method = RequestMethod.POST)
-	public String task(@ModelAttribute Job job) {
+	public String task(@ModelAttribute Job job) throws Exception {
 		if (job.getTaskSeq() == 0) job.setTaskSeq(taskService.countByGroupSeq(job.getGroupSeq()) + 1);
 		Job result = taskService.save(job);
+		schedulerService.startSchedule(groupService.findOne(result.getGroupSeq()));
 		return String.format("redirect:/task/%s?group=%s", result.getJobSeq(), result.getGroupSeq());
 	}
 }
