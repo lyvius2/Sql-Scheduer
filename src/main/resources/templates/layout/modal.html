@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-	<div th:fragment="modal" >
+	<div th:fragment="modal">
 		<div class="modal fade" id="registerJobGroup" tabindex="-1" role="dialog" aria-labelledby="registerJobGroupLabel" aria-hidden="true">
 			<div class="modal-dialog modal-lg" role="document">
 				<div class="modal-content">
-					<form th:action="@{/group}" th:method="post">
+					<form id="jobGroup" th:action="@{/group}" th:method="post">
 						<div class="modal-header">
 							<h5 class="modal-title" id="registerJobGroupLabel">작업그룹 등록</h5>
 							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -42,16 +42,16 @@
 								<div class="col-md-3 mb-3">
 									<input type="text" class="form-control" id="cron" name="cron"/>
 								</div>
-							</div>
-							<div class="form-group row">
-								<div class="col-md-3 mb-3">결과 메일링</div>
-								<div class="col-md-3 mb-3">
-									<div class="form-check">
-										<input type="checkbox" class="form-check-input" name="mailing" checked="checked"/>
+								<div class="col-md-6 mb-3">
+									<div class="custom-control custom-checkbox">
+										<input type="checkbox" class="custom-control-input" name="chkMailing" id="chkMailing" checked="checked"/>
+										<label class="custom-control-label" for="chkMailing">결과 메일링</label>
 									</div>
 								</div>
 							</div>
 						</div>
+						<input type="hidden" id="groupSeq" name="groupSeq" value="0"/>
+						<input type="hidden" id="mailing" name="mailing"/>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
 							<button type="submit" class="btn btn-primary">저장</button>

@@ -3,6 +3,11 @@
       layout:decorator="layout/default">
 <head>
 	<title>Task Handler</title>
+	<style>
+		li.lh-condensed p.h7.my-0 {
+			cursor: pointer;
+		}
+	</style>
 </head>
 <body>
 	<main layout:fragment="container">
@@ -10,25 +15,21 @@
 			<div class="col-md-4 order-md-2 mb-4">
 				<h4 class="d-flex justify-content-between align-items-center mb-3">
 					<span class="text-muted">Task Sequence</span>
-					<span class="badge badge-secondary badge-pill">3</span>
+					<span class="badge badge-secondary badge-pill" th:text="${#lists.size(taskSequence)}">7</span>
 				</h4>
 				<ul class="list-group mb-3">
-					<li class="list-group-item d-flex justify-content-between lh-condensed" th:each="jobunit : ${taskSequence}">
-						<div>
-							<h6 class="my-0" th:text="${jobunit.targetTable}"></h6>
-							<small class="text-muted" th:text="${jobunit.jobDescription}"></small>
+					<li class="list-group-item d-flex justify-content-between"
+					    th:each="jobunit : ${taskSequence}"
+					    th:with="self=${jobunit.jobSeq == job.jobSeq}"
+					    th:classappend="${self}? 'bg-light' : 'lh-condensed'">
+						<div th:class="${self}? 'text-success'">
+							<p class="h7 my-0" th:text="${jobunit.targetTable}" th:attr="data-seq=${jobunit.jobSeq}"></p>
+							<small th:class="${!self}? 'text-muted'" th:text="${jobunit.jobDescription}"></small>
 						</div>
-						<span class="text-muted" th:text="${jobunit.taskSeq}"></span>
-					</li>
-					<li class="list-group-item d-flex justify-content-between bg-light">
-						<div class="text-success">
-							<h6 class="my-0">Promo code</h6>
-							<small>EXAMPLECODE</small>
-						</div>
-						<span class="text-success">-$5</span>
+						<span th:class="${self}? 'text-success' : 'text-muted'" th:text="${jobunit.taskSeq}"></span>
 					</li>
 				</ul>
-
+				<!--
 				<form class="card p-2">
 					<div class="input-group">
 						<input type="text" class="form-control" placeholder="Promo code">
@@ -37,6 +38,7 @@
 						</div>
 					</div>
 				</form>
+				-->
 			</div>
 			<div class="col-md-8 order-md-1">
 				<form class="needs-validation" role="form" th:action="@{/task}" th:object="${job}" th:method="post" novalidate="">
@@ -44,21 +46,21 @@
 					<div class="row">
 						<div class="col-md-3 mb-3">
 							<label for="dbms">DBMS</label>
-							<input type="text" class="form-control" id="dbms" placeholder="" disabled value="">
+							<input type="text" class="form-control" id="dbms" th:value="${group.dbms.getDbms()}" disabled/>
 						</div>
 						<div class="col-md-9 mb-3">
 							<label for="dbUrl">접속 URL</label>
-							<input type="text" class="form-control" id="dbUrl" placeholder="" disabled value="">
+							<input type="text" class="form-control" id="dbUrl" th:value="${group.dbUrl}" disabled>
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-3 mb-3">
 							<label for="dbUsername">로그인</label>
-							<input type="text" class="form-control" id="dbUsername" placeholder="" disabled value="">
+							<input type="text" class="form-control" id="dbUsername" th:value="${group.dbUsername}" disabled>
 						</div>
 						<div class="col-md-3 mb-3">
 							<label for="dbPassword">암호</label>
-							<input type="password" class="form-control" id="dbPassword" placeholder="" disabled value="">
+							<input type="password" class="form-control" id="dbPassword" th:value="${group.dbPassword}" disabled>
 						</div>
 					</div>
 					<hr class="mb-4">
@@ -97,13 +99,22 @@
 
 					<hr class="mb-4">
 					<input type="hidden" th:field="*{jobSeq}"/>
+					<input type="hidden" th:field="*{taskSeq}"/>
+					<input type="hidden" th:field="${group.groupSeq}"/>
 					<button class="btn btn-primary btn-lg btn-block" type="submit">저장</button>
 				</form>
 			</div>
 		</div>
 	</main>
 	<script layout:fragment="script">
-		$('#chkTestMode').on('click', () => $('#chkTestMode').prop('checked')?$('input[name=testMode]').val('Y'):$('input[name=testMode]').val('N'))
+		$('#chkTestMode').on('click', function () {
+			$(this).prop('checked')?$('input[name=testMode]').val('Y'):$('input[name=testMode]').val('N')
+		})
+		$('li.lh-condensed p.h7.my-0').on('click', function() {
+			let jobSeq = $(this).attr('data-seq')
+			let groupSeq = $('input[name=groupSeq]').val()
+			location.href = '/task/' + jobSeq + '?group=' + groupSeq
+		})
 	</script>
 </body>
 </html>

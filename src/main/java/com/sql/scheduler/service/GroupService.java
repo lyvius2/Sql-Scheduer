@@ -1,5 +1,6 @@
 package com.sql.scheduler.service;
 
+import com.sql.scheduler.component.AES256;
 import com.sql.scheduler.entity.JobGroup;
 import com.sql.scheduler.repository.JobGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,9 @@ import java.util.Optional;
 @Transactional
 public class GroupService {
 	@Autowired
+	private AES256 aes256;
+
+	@Autowired
 	private JobGroupRepository repository;
 
 	public List<JobGroup> findAll() {
@@ -24,7 +28,8 @@ public class GroupService {
 		return repository.findById(groupSeq);
 	}
 
-	public JobGroup save(JobGroup jobGroup) {
+	public JobGroup save(JobGroup jobGroup) throws Exception {
+		jobGroup.setDbPassword(aes256.AESEncoder(jobGroup.getDbPassword()));
 		return repository.save(jobGroup);
 	}
 }
