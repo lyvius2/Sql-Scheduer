@@ -6,6 +6,7 @@ import com.sql.scheduler.code.AdminType;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -19,6 +20,9 @@ public class Admin implements Serializable {
 
 	@JsonIgnore
 	private String password;
+
+	private String name;
+	private String email;
 
 	@Enumerated(EnumType.STRING)
 	private AdminStatus status = AdminStatus.E;

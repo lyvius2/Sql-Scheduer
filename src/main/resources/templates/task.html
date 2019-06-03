@@ -29,16 +29,9 @@
 						<span th:class="${self}? 'text-success' : 'text-muted'" th:text="${jobunit.taskSeq}"></span>
 					</li>
 				</ul>
-				<!--
-				<form class="card p-2">
-					<div class="input-group">
-						<input type="text" class="form-control" placeholder="Promo code">
-						<div class="input-group-append">
-							<button type="submit" class="btn btn-secondary">Redeem</button>
-						</div>
-					</div>
-				</form>
-				-->
+				<div class="card p-2">
+					<a th:href="@{/task(group=${group.groupSeq})}" class="btn btn-sm btn-secondary btn-block">새 작업 등록</a>
+				</div>
 			</div>
 			<div class="col-md-8 order-md-1">
 				<form class="needs-validation" role="form" th:action="@{/task}" th:object="${job}" th:method="post" novalidate="">
@@ -101,7 +94,7 @@
 					<input type="hidden" th:field="*{jobSeq}"/>
 					<input type="hidden" th:field="*{taskSeq}"/>
 					<input type="hidden" th:field="${group.groupSeq}"/>
-					<button class="btn btn-primary btn-lg btn-block" type="submit">저장</button>
+					<button class="btn btn-primary btn-block" type="submit">저장</button>
 				</form>
 			</div>
 		</div>

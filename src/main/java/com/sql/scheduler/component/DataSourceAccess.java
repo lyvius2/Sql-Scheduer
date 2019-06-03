@@ -28,8 +28,13 @@ public class DataSourceAccess {
 	}
 
 	public void connectionClose() {
-		this.jdbcTemplate = null;
-		this.transactionManager = null;
-		this.dataSource = null;
+		try {
+			this.jdbcTemplate = null;
+			this.transactionManager = null;
+			this.dataSource.getConnection().close();
+			this.dataSource = null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

@@ -1,42 +1,49 @@
 package com.sql.scheduler.component;
 
-import org.apache.commons.codec.binary.Base64;
-import org.springframework.stereotype.Component;
+import java.io.UnsupportedEncodingException;
+import java.security.GeneralSecurityException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.Key;
+
+import org.apache.commons.codec.binary.Base64;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AES256 {
-	private static String ENCODING_KEY = "aes256-secretKey";
-	private static String INSTANCE_REFERENCE = "AES/CBC/PKCS5Padding";
+	private String iv;
 	private Key keySpec;
+	private String key = "aes256encoderkey";
 
-	public AES256() throws Exception {
-		byte[] keyBytes = new byte[ENCODING_KEY.length()];
-		byte[] b = ENCODING_KEY.getBytes("UTF-8");
+	public AES256() throws UnsupportedEncodingException {
+		this.iv = key.substring(0, 16);
+		byte[] keyBytes = new byte[16];
+		byte[] b = key.getBytes("UTF-8");
 		int len = b.length;
-		if (len > keyBytes.length) len = keyBytes.length;
-		System.arraycopy(b, 0, keyBytes, 0 , len);
+		if(len > keyBytes.length){
+			len = keyBytes.length;
+		}
+		System.arraycopy(b, 0, keyBytes, 0, len);
 		SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
+
 		this.keySpec = keySpec;
 	}
 
-	public String AESEncoder(String targetStr) throws Exception {
-		Cipher c = Cipher.getInstance(INSTANCE_REFERENCE);
-		c.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(ENCODING_KEY.getBytes()));
-
-		byte[] encrypted = c.doFinal(targetStr.getBytes("UTF-8"));
-		return new String(Base64.encodeBase64(encrypted));
+	public String AESEncoder(String str) throws NoSuchAlgorithmException, GeneralSecurityException, UnsupportedEncodingException{
+		Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		c.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes()));
+		byte[] encrypted = c.doFinal(str.getBytes("UTF-8"));
+		String enStr = new String(Base64.encodeBase64(encrypted));
+		return enStr;
 	}
 
-	public String AESDecoder(String targetStr) throws Exception {
-		Cipher c = Cipher.getInstance(INSTANCE_REFERENCE);
-		c.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(ENCODING_KEY.getBytes("UTF-8")));
-
-		byte[] byteStr = Base64.decodeBase64(targetStr.getBytes());
+	public String AESDecoder(String str) throws NoSuchAlgorithmException, GeneralSecurityException, UnsupportedEncodingException {
+		Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
+		c.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes()));
+		byte[] byteStr = Base64.decodeBase64(str.getBytes());
 		return new String(c.doFinal(byteStr), "UTF-8");
 	}
 }

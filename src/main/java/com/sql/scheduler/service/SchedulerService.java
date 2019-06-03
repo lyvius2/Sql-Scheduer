@@ -24,6 +24,6 @@ public class SchedulerService {
 		Trigger trigger = triggerBuilder.buildTrigger(group.getCron(), group.getGroupName());
 		Set<Trigger> triggers = new HashSet<>();
 		triggers.add(trigger);
-		scheduler.scheduleJob(jobDetail, triggers, false);
+		scheduler.scheduleJob(jobDetail, triggers, true);
 	}
 }
