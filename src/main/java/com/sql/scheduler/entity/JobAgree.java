@@ -1,9 +1,9 @@
 package com.sql.scheduler.entity;
 
+import com.sql.scheduler.code.AgreeStatus;
 import lombok.Data;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Entity
@@ -14,12 +14,16 @@ public class JobAgree {
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int jobAgreeSeq;
 
+	@Column(name = "job_seq")
 	private int jobSeq;
+
+	@Column(name = "register_seq")
+	private int registerSeq;
 
 	private String username;
 
-	@Size(max = 1)
-	private String agreed = "N";
+	@Enumerated(EnumType.STRING)
+	private AgreeStatus agreed = AgreeStatus.WAIT;
 
 	@Column(insertable = false)
 	@Temporal(TemporalType.TIMESTAMP)
@@ -27,5 +31,5 @@ public class JobAgree {
 
 	@Column(insertable = false)
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date agreedDt;
+	private Date modDt;
 }
