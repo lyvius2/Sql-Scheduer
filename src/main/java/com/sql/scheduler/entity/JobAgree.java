@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(indexes = {@Index(name = "index_jobAgree_jobSeq", columnList = "jobSeq", unique = false)})
+@Table(indexes = {@Index(name = "index_jobAgree_jobSeq", columnList = "job_seq", unique = false)})
 @Data
 public class JobAgree {
 	@Id

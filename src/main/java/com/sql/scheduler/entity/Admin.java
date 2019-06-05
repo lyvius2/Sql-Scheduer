@@ -6,6 +6,10 @@ import com.sql.scheduler.code.AdminType;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -13,28 +17,31 @@ import java.util.Date;
 @Table(indexes = {@Index(name = "index_admin_username", columnList = "username", unique = true)})
 @Data
 public class Admin implements Serializable {
+	@Size(min = 4, max = 50, message = "ID는 4글자 이상 50글자 미만으로 지정하십시오.")
 	@Id
 	@Column
 	private String username;
 
+	@NotNull
+	//@Size(min = 8, max = 20, message = "비밀번호는 8자리 이상 20자리 미만으로 지정하십시오.")
+	//@Pattern(regexp = "^(?=.*\\d)(?=.*[~`!@#$%\\^&*()-])(?=.*[a-zA-Z]).{8,20}$", message = "영문과 숫자 그리고 특수 문자를 포함하여야 합니다.")
 	@JsonIgnore
 	private String password;
 
+	@NotNull(message = "필수 입력 값입니다.")
 	private String name;
+
+	@Email(message = "E-Mail 양식이 아닙니다.")
 	private String email;
 
 	@Enumerated(EnumType.STRING)
 	private AdminStatus status = AdminStatus.E;
 
 	@Enumerated(EnumType.STRING)
-	private AdminType type;
-
-	@JsonIgnore
-	private String certKey;
+	private AdminType type = AdminType.ADMIN;
 
 	private String dept;
 
-	@Column(insertable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date regDt = new Date();
 

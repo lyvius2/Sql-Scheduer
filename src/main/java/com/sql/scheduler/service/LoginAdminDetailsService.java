@@ -1,5 +1,6 @@
 package com.sql.scheduler.service;
 
+import com.sql.scheduler.code.AdminStatus;
 import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,10 @@ public class LoginAdminDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Admin admin = adminRepository.getOne(username);
+		Admin admin = adminRepository.findByUsername(username);
 		if (admin == null) {
 			throw new UsernameNotFoundException("Admin User is not found.");
-		} else if (admin != null && !admin.getStatus().equals("Y")) {
+		} else if (admin != null && !admin.getStatus().equals(AdminStatus.Y)) {
 			throw new UsernameNotFoundException("This account did not complete the procedure.");
 		}
 		return new LoginAdminDetails(admin);
