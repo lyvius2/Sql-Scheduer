@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+	<div th:fragment="cron">
+		<div id="crontabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+			<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all" role="tablist">
+				<li class="ui-state-default ui-corner-top ui-tabs-active ui-state-active" role="tab" tabindex="0" aria-controls="tabs-1" aria-labelledby="ui-id-1" aria-selected="true" aria-expanded="true"><a href="#tabs-1" class="ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-1">초</a></li>
+				<li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-2" aria-labelledby="ui-id-2" aria-selected="false" aria-expanded="false"><a href="#tabs-2" class="ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-2">분</a></li>
+				<li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-3" aria-labelledby="ui-id-3" aria-selected="false" aria-expanded="false"><a href="#tabs-3" class="ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-3">시</a></li>
+				<li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-4" aria-labelledby="ui-id-4" aria-selected="false" aria-expanded="false"><a href="#tabs-4" class="ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-4">날짜/요일</a></li>
+				<li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-5" aria-labelledby="ui-id-5" aria-selected="false" aria-expanded="false"><a href="#tabs-5" class="ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-5">월</a></li>
+				<li class="ui-state-default ui-corner-top" role="tab" tabindex="-1" aria-controls="tabs-6" aria-labelledby="ui-id-6" aria-selected="false" aria-expanded="false"><a href="#tabs-6" class="ui-tabs-anchor" role="presentation" tabindex="-1" id="ui-id-6">년</a></li>
+			</ul>
+			<div id="tabs-1" aria-labelledby="ui-id-1" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="false">
+				<div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronEverySecond" name="cronSecond">
+						<label for="cronEverySecond" class="nofloat">매 초마다</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronSecondIncrement" name="cronSecond">
+						<label for="cronSecondIncrement" class="nofloat">
+							<select id="cronSecondIncrementStart" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(0, 59)}">
+									<option th:value="${i}" th:text="${i < 10 ? '0' + i : i}"></option>
+								</th:block>
+							</select> 초부터 매
+							<select id="cronSecondIncrementIncrement" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(1, 60)}">
+									<option th:value="${i}">[[${i}]]</option>
+								</th:block>
+							</select> 초마다
+						</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronSecondSpecific" checked="checked" name="cronSecond">
+						<label for="cronSecondSpecific" class="nofloat">특정 초 시각 (1개 이상 선택)</label>
+						<div style="margin-left:50px;">
+							<th:block th:each="p: ${#numbers.sequence(0, 5)}">
+								<div>
+									<th:block th:each="i: ${#numbers.sequence((p * 10), (p * 10) + 9)}">
+										<label th:for="${'cronSecond' + i}" class="nofloat" th:text="${i < 10 ? '0' + i : i}"></label>
+										<input type="checkbox" th:id="${'cronSecond' + i}" name="cronSecondSpecificSpecific" th:value="${i}" th:checked="${i == 0}">
+									</th:block>
+								</div>
+							</th:block>
+						</div>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronSecondRange" name="cronSecond">
+						<label for="cronSecondRange" class="nofloat">
+							<select id="cronSecondRangeStart" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(0, 59)}">
+									<option th:value="${i}" th:text="${i < 10 ? '0' + i : i}"></option>
+								</th:block>
+							</select> 초와
+							<select id="cronSecondRangeEnd" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(0, 59)}">
+									<option th:value="${i}" th:text="${i < 10 ? '0' + i : i}"></option>
+								</th:block>
+							</select> 초 사이 매 초마다
+						</label>
+					</div>
+				</div>
+			</div>
+			<div id="tabs-2" aria-labelledby="ui-id-2" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="true" style="display: none;">
+				<div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronEveryMinute" name="cronMinute">
+						<label for="cronEveryMinute" class="nofloat">매 분마다</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronMinuteIncrement" name="cronMinute">
+						<label for="cronMinuteIncrement" class="nofloat">
+							<select id="cronMinuteIncrementStart" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(0, 59)}">
+									<option th:value="${i}" th:text="${i < 10 ? '0' + i : i}"></option>
+								</th:block>
+							</select> 분부터 매
+							<select id="cronMinuteIncrementIncrement" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(1, 60)}">
+									<option th:value="${i}" th:text="${i}"></option>
+								</th:block>
+							</select> 분마다
+						</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronMinuteSpecific" checked="checked" name="cronMinute">
+						<label for="cronMinuteSpecific" class="nofloat">특정 분 시각 (1개 이상 선택)</label>
+						<div style="margin-left:50px;">
+							<th:block th:each="p: ${#numbers.sequence(0, 5)}">
+								<div>
+									<th:block th:each="i: ${#numbers.sequence((p * 10), (p * 10) + 9)}">
+										<label th:for="${'cronMinute' + i}" class="nofloat" th:text="${i < 10 ? '0' + i : i}"></label>
+										<input type="checkbox" th:id="${'cronMinute' + i}" name="cronMinuteSpecificSpecific" th:value="${i}" th:checked="${i == 0}">
+									</th:block>
+								</div>
+							</th:block>
+						</div>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronMinuteRange" name="cronMinute">
+						<label for="cronMinuteRange" class="nofloat">
+							<select id="cronMinuteRangeStart" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(0, 59)}">
+									<option th:value="${i}" th:text="${i < 10 ? '0' + i : i}"></option>
+								</th:block>
+							</select> 분과
+							<select id="cronMinuteRangeEnd" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(0, 59)}">
+									<option th:value="${i}" th:text="${i < 10 ? '0' + i : i}"></option>
+								</th:block>
+							</select> 분 사이 매 분마다
+						</label>
+					</div>
+				</div>
+			</div>
+			<div id="tabs-3" aria-labelledby="ui-id-3" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="true" style="display: none;">
+				<div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronEveryHour" name="cronHour">
+						<label for="cronEveryHour" class="nofloat">매 시마다</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronHourIncrement" name="cronHour">
+						<label for="cronHourIncrement" class="nofloat">
+							<select id="cronHourIncrementStart" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(0, 23)}">
+									<option th:value="${i}" th:text="${i < 10 ? '0' + i : i}"></option>
+								</th:block>
+							</select> 시부터 매
+							<select id="cronHourIncrementIncrement" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(1, 24)}">
+									<option th:value="${i}" th:text="${i}"></option>
+								</th:block>
+							</select> 시마다
+						</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronHourSpecific" checked="checked" name="cronHour">
+						<label for="cronHourSpecific" class="nofloat">특정 시 시각 (1개 이상 선택)</label>
+						<div style="margin-left:50px;">
+							<th:block th:each="p: ${#numbers.sequence(0, 2)}">
+								<div>
+									<th:block th:each="i: ${#numbers.sequence((p * 10), (p * 10) + 9)}">
+										<label th:for="${'cronHour' + i}" class="nofloat" th:text="${i < 10 ? '0' + i : i}" th:if="${i < 24}"></label>
+										<input type="checkbox" th:id="${'cronHour' + i}" name="cronHourSpecificSpecific" th:value="${i}" th:if="${i < 24}" th:checked="${i == 0}">
+									</th:block>
+								</div>
+							</th:block>
+						</div>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronHourRange" name="cronHour">
+						<label for="cronHourRange" class="nofloat">
+							<select id="cronHourRangeStart" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(0, 23)}">
+									<option th:value="${i}" th:text="${i < 10 ? '0' + i : i}"></option>
+								</th:block>
+							</select> 시와
+							<select id="cronHourRangeEnd" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(0, 23)}">
+									<option th:value="${i}" th:text="${i < 10 ? '0' + i : i}"></option>
+								</th:block>
+							</select> 시 사이 매 시간마다
+						</label>
+					</div>
+				</div>
+			</div>
+			<div id="tabs-4" aria-labelledby="ui-id-4" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="true" style="display: none;">
+				<div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronEveryDay" name="cronDay" checked="checked">
+						<label for="cronEveryDay" class="nofloat">매일</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronDowIncrement" name="cronDay">
+						<label for="cronDowIncrement" class="nofloat">
+							<select id="cronDowIncrementStart" style="width:125px;">
+								<option value="1">Sunday</option>
+								<option value="2">Monday</option>
+								<option value="3">Tuesday</option>
+								<option value="4">Wednesday</option>
+								<option value="5">Thursday</option>
+								<option value="6">Friday</option>
+								<option value="7">Saturday</option>
+							</select> 부터
+							<select id="cronDowIncrementIncrement" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(1, 7)}">
+									<option th:value="${i}" th:text="${i}"></option>
+								</th:block>
+							</select> 일마다
+						</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronDomIncrement" name="cronDay">
+						<label for="cronDomIncrement" class="nofloat">월의
+							<select id="cronDomIncrementStart" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(1, 31)}">
+									<option th:if="${i} eq 1 or ${i} eq 21 or ${i} eq 31" th:value="${i}">[[${i}]]st</option>
+									<option th:if="${i} eq 2 or ${i} eq 22" th:value="${i}">[[${i}]]nd</option>
+									<option th:if="${i} eq 3 or ${i} eq 23" th:value="${i}">[[${i}]]rd</option>
+									<option th:unless="${i} eq 1 or ${i} eq 2 or ${i} eq 3 or ${i} eq 21 or ${i} eq 22 or ${i} eq 23 or ${i} eq 31"
+									        th:value="${i}">[[${i}]]th</option>
+								</th:block>
+							</select> 번째 날부터
+							<select id="cronDomIncrementIncrement" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(1, 31)}">
+									<option th:value="${i}" th:text="${i}"></option>
+								</th:block>
+							</select> 일마다
+						</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronDowSpecific" name="cronDay">
+						<label for="cronDowSpecific" class="nofloat">특정 요일 (1개 이상 선택)</label>
+						<div style="margin-left:50px;">
+							<label for="cronDowSun" class="nofloat">Sunday</label>
+							<input type="checkbox" id="cronDowSun" name="cronDowSpecificSpecific" value="SUN">
+							<label for="cronDowMon" class="nofloat">Monday</label>
+							<input type="checkbox" id="cronDowMon" name="cronDowSpecificSpecific" value="MON">
+							<label for="cronDowTue" class="nofloat">Tuesday</label>
+							<input type="checkbox" id="cronDowTue" name="cronDowSpecificSpecific" value="TUE">
+							<label for="cronDowWed" class="nofloat">Wednesday</label>
+							<input type="checkbox" id="cronDowWed" name="cronDowSpecificSpecific" value="WED">
+							<label for="cronDowThu" class="nofloat">Thursday</label>
+							<input type="checkbox" id="cronDowThu" name="cronDowSpecificSpecific" value="THU">
+							<label for="cronDowFri" class="nofloat">Friday</label>
+							<input type="checkbox" id="cronDowFri" name="cronDowSpecificSpecific" value="FRI">
+							<label for="cronDowSat" class="nofloat">Saturday</label>
+							<input type="checkbox" id="cronDowSat" name="cronDowSpecificSpecific" value="SAT">
+						</div>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronDomSpecific" name="cronDay">
+						<label for="cronDomSpecific" class="nofloat">특정 날짜 (1개 이상 선택)</label>
+						<div style="margin-left:50px;">
+							<th:block th:each="p: ${#numbers.sequence(0, 2)}">
+								<div>
+									<th:block th:each="i: ${#numbers.sequence((p * 10) + 1, (p * 10) + 10)}">
+										<label th:for="${'cronDom' + i}" class="nofloat" th:text="${i < 10 ? '0' + i : i}"></label>
+										<input type="checkbox" th:id="${'cronDom' + i}" name="cronDomSpecificSpecific" th:value="${i}">
+										<label for="cronDom31" class="nofloat" th:if="${i == 30}">31</label>
+										<input type="checkbox" id="cronDom31" name="cronDomSpecificSpecific" value="31" th:if="${i == 30}">
+									</th:block>
+								</div>
+							</th:block>
+						</div>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronLastDayOfMonth" name="cronDay">
+						<label for="cronLastDayOfMonth" class="nofloat">월 마지막 날</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronLastWeekdayOfMonth" name="cronDay">
+						<label for="cronLastWeekdayOfMonth" class="nofloat">월 마지막 평일(월-금)</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronLastSpecificDom" name="cronDay">
+						<label for="cronLastSpecificDom" class="nofloat">월 마지막 요일
+							<select id="cronLastSpecificDomDay" style="width:125px;">
+								<option value="1">Sunday</option>
+								<option value="2">Monday</option>
+								<option value="3">Tuesday</option>
+								<option value="4">Wednesday</option>
+								<option value="5">Thursday</option>
+								<option value="6">Friday</option>
+								<option value="7">Saturday</option>
+							</select>
+						</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronDaysBeforeEom" name="cronDay">
+						<label for="cronDaysBeforeEom" class="nofloat">월말로부터
+							<select id="cronDaysBeforeEomMinus" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(1, 31)}">
+									<option th:value="${i}" th:text="${i}"></option>
+								</th:block>
+							</select> 일전
+						</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronDaysNearestWeekdayEom" name="cronDay">
+						<label for="cronDaysNearestWeekdayEom" class="nofloat">월
+							<select id="cronDaysNearestWeekday" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(1, 31)}">
+									<option th:if="${i} eq 1 or ${i} eq 21 or ${i} eq 31" th:value="${i}">[[${i}]]st</option>
+									<option th:if="${i} eq 2 or ${i} eq 22" th:value="${i}">[[${i}]]nd</option>
+									<option th:if="${i} eq 3 or ${i} eq 23" th:value="${i}">[[${i}]]rd</option>
+									<option th:unless="${i} eq 1 or ${i} eq 2 or ${i} eq 3 or ${i} eq 21 or ${i} eq 22 or ${i} eq 23 or ${i} eq 31"
+									        th:value="${i}">[[${i}]]th</option>
+								</th:block>
+							</select> 번째 날로부터 가장 가까운 평일(월-금)
+						</label>
+					</div>
+
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronNthDay" name="cronDay">
+						<label for="cronNthDay" class="nofloat">월
+							<select id="cronNthDayNth" style="width:50px;">
+								<option value="1">1st</option>
+								<option value="2">2nd</option>
+								<option value="3">3rd</option>
+								<option value="4">4th</option>
+								<option value="5">5th</option>
+							</select> 번째
+							<select id="cronNthDayDay" style="width:125px;">
+								<option value="1">Sunday</option>
+								<option value="2">Monday</option>
+								<option value="3">Tuesday</option>
+								<option value="4">Wednesday</option>
+								<option value="5">Thursday</option>
+								<option value="6">Friday</option>
+								<option value="7">Saturday</option>
+							</select> 요일
+						</label>
+					</div>
+				</div>
+			</div>
+			<div id="tabs-5" aria-labelledby="ui-id-5" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="true" style="display: none;">
+				<div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronEveryMonth" name="cronMonth" checked="checked">
+						<label for="cronEveryMonth" class="nofloat">매월</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronMonthIncrement" name="cronMonth">
+						<label for="cronMonthIncrement" class="nofloat">
+							<select id="cronMonthIncrementStart" style="width:125px;">
+								<option value="1">January</option>
+								<option value="2">February</option>
+								<option value="3">March</option>
+								<option value="4">April</option>
+								<option value="5">May</option>
+								<option value="6">June</option>
+								<option value="7">July</option>
+								<option value="8">August</option>
+								<option value="9">September</option>
+								<option value="10">October</option>
+								<option value="11">November</option>
+								<option value="12">December</option>
+							</select> 월로부터
+							<select id="cronMonthIncrementIncrement" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(1, 12)}">
+									<option th:value="${i}" th:text="${i}"></option>
+								</th:block>
+							</select> 월마다
+						</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronMonthSpecific" name="cronMonth">
+						<label for="cronMonthSpecific" class="nofloat">특정 월 (1개 이상 선택)</label>
+						<div style="margin-left:50px;">
+							<div>
+								<div>
+									<label for="cronMonth1" class="nofloat">January&nbsp;&nbsp;&nbsp;&nbsp;</label>
+									<input type="checkbox" id="cronMonth1" name="cronMonthSpecificSpecific" value="JAN">
+
+									<label for="cronMonth2" class="nofloat">February&nbsp;&nbsp;</label>
+									<input type="checkbox" id="cronMonth2" name="cronMonthSpecificSpecific" value="FEB">
+
+									<label for="cronMonth3" class="nofloat">March</label>
+									<input type="checkbox" id="cronMonth3" name="cronMonthSpecificSpecific" value="MAR">
+
+									<label for="cronMonth4" class="nofloat">April</label>
+									<input type="checkbox" id="cronMonth4" name="cronMonthSpecificSpecific" value="APR">
+
+									<label for="cronMonth5" class="nofloat">May</label>
+									<input type="checkbox" id="cronMonth5" name="cronMonthSpecificSpecific" value="MAY">
+
+									<label for="cronMonth6" class="nofloat">June</label>
+									<input type="checkbox" id="cronMonth6" name="cronMonthSpecificSpecific" value="JUN">
+
+									<label for="cronMonth7" class="nofloat">July</label>
+									<input type="checkbox" id="cronMonth7" name="cronMonthSpecificSpecific" value="JUL">
+
+									<label for="cronMonth8" class="nofloat">August</label>
+									<input type="checkbox" id="cronMonth8" name="cronMonthSpecificSpecific" value="AUG">
+
+									<label for="cronMonth9" class="nofloat">September</label>
+									<input type="checkbox" id="cronMonth9" name="cronMonthSpecificSpecific" value="SEP">
+
+									<label for="cronMonth10" class="nofloat">October</label>
+									<input type="checkbox" id="cronMonth10" name="cronMonthSpecificSpecific" value="OCT">
+								</div>
+								<div>
+									<label for="cronMonth11" class="nofloat">November</label>
+									<input type="checkbox" id="cronMonth11" name="cronMonthSpecificSpecific" value="NOV">
+
+									<label for="cronMonth12" class="nofloat">December</label>
+									<input type="checkbox" id="cronMonth12" name="cronMonthSpecificSpecific" value="DEC">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronMonthRange" name="cronMonth">
+						<label for="cronMonthRange" class="nofloat">
+							<select id="cronMonthRangeStart" style="width:125px;">
+								<option value="1">January</option>
+								<option value="2">February</option>
+								<option value="3">March</option>
+								<option value="4">April</option>
+								<option value="5">May</option>
+								<option value="6">June</option>
+								<option value="7">July</option>
+								<option value="8">August</option>
+								<option value="9">September</option>
+								<option value="10">October</option>
+								<option value="11">November</option>
+								<option value="12">December</option>
+							</select> 월과
+							<select id="cronMonthRangeEnd" style="width:125px;">
+								<option value="1">January</option>
+								<option value="2">February</option>
+								<option value="3">March</option>
+								<option value="4">April</option>
+								<option value="5">May</option>
+								<option value="6">June</option>
+								<option value="7">July</option>
+								<option value="8">August</option>
+								<option value="9">September</option>
+								<option value="10">October</option>
+								<option value="11">November</option>
+								<option value="12">December</option>
+							</select> 월 사이 매월
+						</label>
+					</div>
+				</div>
+			</div>
+			<div id="tabs-6" aria-labelledby="ui-id-6" class="ui-tabs-panel ui-widget-content ui-corner-bottom" role="tabpanel" aria-hidden="true" style="display: none;">
+				<div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronEveryYear" name="cronYear" checked="checked">
+						<label for="cronEveryYear" class="nofloat">매년</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronYearIncrement" name="cronYear">
+						<label for="cronYearIncrement" class="nofloat">
+							<select id="cronYearIncrementStart" style="width:80px;">
+								<th:block th:each="i: ${#numbers.sequence(2018, 2099)}">
+									<option th:value="${i}" th:text="${i}"></option>
+								</th:block>
+							</select> 년부터 매
+							<select id="cronYearIncrementIncrement" style="width:50px;">
+								<th:block th:each="i: ${#numbers.sequence(1, 83)}">
+									<option th:value="${i}" th:text="${i}"></option>
+								</th:block>
+							</select> 년마다
+						</label>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronYearSpecific" name="cronYear">
+						<label for="cronYearSpecific" class="nofloat">특정 년도 (1개 이상 선택)</label>
+						<div style="margin-left:50px;">
+							<th:block th:each="p: ${#numbers.sequence(0, 6)}">
+								<div>
+									<th:block th:each="i: ${#numbers.sequence((p * 12) + 2018, (p * 12) + 2029)}">
+										<label th:for="${'cronYear' + i}" class="nofloat" th:text="${i}" th:if="${i < 2100}"></label>
+										<input type="checkbox" th:id="${'cronYear' + i}" name="cronYearSpecificSpecific" th:value="${i}" th:if="${i < 2100}">
+									</th:block>
+								</div>
+							</th:block>
+						</div>
+					</div>
+					<div class="cron-option" style="padding-bottom:10px">
+						<input type="radio" id="cronYearRange" name="cronYear">
+						<label for="cronYearRange" class="nofloat">Every year between
+							<select id="cronYearRangeStart" style="width:80px;">
+								<th:block th:each="i: ${#numbers.sequence(2018, 2099)}">
+									<option th:value="${i}" th:text="${i}"></option>
+								</th:block>
+							</select> 년과
+							<select id="cronYearRangeEnd" style="width:80px;">
+								<th:block th:each="i: ${#numbers.sequence(2018, 2099)}">
+									<option th:value="${i}" th:text="${i}"></option>
+								</th:block>
+							</select> 년 사이 매년마다
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<table class="table table-sm mb-3">
+			<thead>
+				<th scope="col">초</th>
+				<th scope="col">분</th>
+				<th scope="col">시</th>
+				<th scope="col">날짜</th>
+				<th scope="col">월</th>
+				<th scope="col">요일</th>
+				<th scope="col">년</th>
+			</thead>
+			<tbody>
+				<tr>
+					<td id="cronResultSecond"></td>
+					<td id="cronResultMinute"></td>
+					<td id="cronResultHour"></td>
+					<td id="cronResultDom"></td>
+					<td id="cronResultMonth"></td>
+					<td id="cronResultDow"></td>
+					<td id="cronResultYear"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="form-group row mb-3">
+			<div class="col-md-4">
+				<span class="font-weight-bold">Resulting Cron Expression:</span>
+			</div>
+			<div class="col-md-8">
+				<div class="input-group">
+					<input type="text" class="form-control" id="cronResult" readonly="readonly"/>
+					<div class="input-group-append">
+						<a href="javascript:syncCronValue()" class="btn btn-sm btn-secondary">
+							<i class="fas fa-sync"> 입력값으로 등록</i>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="text-right">
+			<span class="align-items-end font-italic">powered by freeformatter.com</span>
+		</div>
+	</div>
+</body>
+</html>

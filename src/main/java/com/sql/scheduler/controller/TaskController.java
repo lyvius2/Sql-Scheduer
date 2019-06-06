@@ -1,5 +1,11 @@
 package com.sql.scheduler.controller;
 
+import com.cronutils.descriptor.CronDescriptor;
+import com.cronutils.model.Cron;
+import com.cronutils.model.CronType;
+import com.cronutils.model.definition.CronDefinition;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.parser.CronParser;
 import com.google.gson.Gson;
 import com.sql.scheduler.code.DBMS;
 import com.sql.scheduler.entity.Job;
@@ -15,6 +21,8 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Optional;
 
 @Slf4j
@@ -68,5 +76,24 @@ public class TaskController {
 		Job result = taskService.save(job);
 		schedulerService.startSchedule(groupService.findOne(result.getGroupSeq()));
 		return String.format("redirect:/task/%s?group=%s", result.getJobSeq(), result.getGroupSeq());
+	}
+
+	@RequestMapping(value = "/chkCron", produces = "application/json; charset=utf-8")
+	@ResponseBody
+	public String cron(@RequestParam("cron") String cronStr) {
+		HashMap<String, Object> resultMap = new HashMap<>();
+		resultMap.put("input", cronStr);
+		CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
+		CronParser cronParser = new CronParser(cronDefinition);
+		try {
+			Cron cron = cronParser.parse(cronStr).validate();
+			CronDescriptor descriptor = CronDescriptor.instance(Locale.KOREA);
+			resultMap.put("describe", descriptor.describe(cron));
+			resultMap.put("validate", true);
+		} catch(Exception e) {
+			e.getStackTrace();
+			resultMap.put("validate", false);
+		}
+		return gson.toJson(resultMap);
 	}
 }

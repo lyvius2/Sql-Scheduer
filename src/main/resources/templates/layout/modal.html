@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
 	<div th:fragment="modal">
-		<div class="modal fade" id="registerJobGroup" tabindex="-1" role="dialog" aria-labelledby="registerJobGroupLabel" aria-hidden="true">
+		<div class="modal fade small" id="registerJobGroup" tabindex="-1" role="dialog" aria-labelledby="registerJobGroupLabel" aria-hidden="true">
 			<div class="modal-dialog modal-lg" role="document">
 				<div class="modal-content">
 					<form id="jobGroup" th:action="@{/group}" th:method="post">
@@ -16,7 +16,7 @@
 							<div class="row">
 								<div class="col-md-8 mb-3">
 									<label for="groupName" class="col-form-label">작업그룹명</label>
-									<input type="text" class="form-control" id="groupName" name="groupName"/>
+									<input type="text" class="form-control" id="groupName" name="groupName" required="required"/>
 								</div>
 								<div class="col-md-4 mb-3">
 									<label for="dbms" class="col-form-label">DBMS</label>
@@ -26,21 +26,21 @@
 								</div>
 								<div class="col-md-12 mb-3">
 									<label for="dbUrl" class="col-form-label">DB접속 URL</label>
-									<input type="text" class="form-control" id="dbUrl" name="dbUrl"/>
+									<input type="text" class="form-control" id="dbUrl" name="dbUrl" required="required"/>
 								</div>
 								<div class="col-md-6 mb-3">
 									<label for="dbUsername" class="col-form-label">로그인 ID</label>
-									<input type="text" class="form-control" id="dbUsername" name="dbUsername"/>
+									<input type="text" class="form-control" id="dbUsername" name="dbUsername" required="required"/>
 								</div>
 								<div class="col-md-6 mb-3">
 									<label for="dbPassword" class="col-form-label">암호</label>
-									<input type="password" class="form-control" id="dbPassword" name="dbPassword"/>
+									<input type="password" class="form-control" id="dbPassword" name="dbPassword" required="required"/>
 								</div>
 							</div>
 							<div class="form-group row">
-								<div class="col-md-3 mb-3">실행주기(Cron)</div>
-								<div class="col-md-3 mb-3">
-									<input type="text" class="form-control" id="cron" name="cron"/>
+								<div class="col-md-2 mb-3">실행주기(Cron)</div>
+								<div class="col-md-4 mb-3">
+									<input type="text" class="form-control" id="cron" name="cron" required="required"/>
 								</div>
 								<div class="col-md-6 mb-3">
 									<div class="custom-control custom-checkbox">
@@ -49,12 +49,13 @@
 									</div>
 								</div>
 							</div>
+							<div th:include="layout/cron :: cron"></div>
 						</div>
 						<input type="hidden" id="groupSeq" name="groupSeq" value="0"/>
 						<input type="hidden" id="mailing" name="mailing"/>
 						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
-							<button type="submit" class="btn btn-primary">저장</button>
+							<button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">닫기</button>
+							<button type="submit" class="btn btn-sm btn-primary">저장</button>
 						</div>
 					</form>
 				</div>

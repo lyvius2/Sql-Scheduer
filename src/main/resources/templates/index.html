@@ -94,6 +94,7 @@
 			</small>
 		</div>
 	</main>
+	<script src="/js/fn.cronGenerator.js"></script>
 	<script layout:fragment="script">
 		$('form#jobGroup').on('submit', e => {
 			e.preventDefault()
@@ -105,6 +106,16 @@
 
 		$('#registerJobGroup').on('show.bs.modal', e => {
 
+		})
+
+		function syncCronValue() {
+			$('input#cron').val($('#cronResult').val())
+		}
+
+		$(function () {
+			$('#crontabs').tabs()
+			$('#crontabs input, #crontabs select').change(FF.cron)
+			FF.cron()
 		})
 	</script>
 </body>
