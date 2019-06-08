@@ -1,6 +1,7 @@
 package com.sql.scheduler.service;
 
 import com.sql.scheduler.code.AdminType;
+import com.sql.scheduler.code.AgreeStatus;
 import com.sql.scheduler.component.EmailSender;
 import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.entity.Job;
@@ -19,9 +20,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class TaskService {
-	@Autowired
-	private EmailSender sender;
-
 	@Autowired
 	private JobRepository jobRepository;
 
@@ -79,5 +77,10 @@ public class TaskService {
 		jobAgree.setRegisterSeq(registerSeq);
 		jobAgree.setUsername(checkerUsername);
 		return agreeRepository.save(jobAgree);
+	}
+
+	public int countByUnagreedCase(int jobSeq) {
+		int registerSeq = agreeRepository.getMaxRegisterSeqByJobSeq(jobSeq);
+		return (int)agreeRepository.countByJobSeqAndRegisterSeqAndAgreedNot(jobSeq, registerSeq, AgreeStatus.AGREED);
 	}
 }

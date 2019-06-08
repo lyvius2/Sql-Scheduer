@@ -131,13 +131,13 @@ public class TaskController {
 			List<Admin> checkers = taskService.findCheckers(admin.getUsername());
 			checkers.stream().forEach(c -> {
 				taskService.save(resultJob.getJobSeq(), registerSeq, c.getUsername());
+				SimpleMailMessage message = new SimpleMailMessage();
+				message.setFrom(admin.getAdmin().getEmail());
+				message.setTo(c.getEmail());
+				message.setSubject("스케줄러 작업에 대한 쿼리 확인 메일입니다.");
+				message.setText("테스트 메일입니다.");
+				sender.sendMail(message);
 			});
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setFrom(admin.getAdmin().getEmail());
-			message.setTo(checkers.stream().map(a -> a.getEmail()).toArray(String[]::new));
-			message.setSubject("스케줄러 작업에 대한 쿼리 확인 메일입니다.");
-			message.setText("테스트 메일입니다.");
-			sender.sendMail(message);
 		}
 		schedulerService.startSchedule(groupService.findOne(resultJob.getGroupSeq()));
 		return String.format("redirect:/task/%s?group=%s", resultJob.getJobSeq(), resultJob.getGroupSeq());

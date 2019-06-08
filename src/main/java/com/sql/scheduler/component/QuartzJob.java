@@ -2,6 +2,7 @@ package com.sql.scheduler.component;
 
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobGroup;
+import com.sql.scheduler.service.TaskService;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,9 @@ public class QuartzJob extends QuartzJobBean {
 	private DataSourceAccess dataAccess;
 
 	@Autowired
+	private TaskService service;
+
+	@Autowired
 	private TaskDao taskDao;
 
 	@Autowired
@@ -39,17 +43,23 @@ public class QuartzJob extends QuartzJobBean {
 		log.info("===============================================================");
 		log.info("작업 시작 - " + beginDate.format(formatter));
 		log.info("===============================================================");
-		dataAccess.dataSourceInitialize(this.jobsInfo.getDbUrl(), this.jobsInfo.getDbUsername(), dbPassword, this.jobsInfo.getDbms());
-		for (Job job : this.jobsInfo.getJob()) {
-			int targetCount = taskDao.count(job.getTargetTable(), job.getConditional());
-			log.info("작업 대상 ROWS : " + targetCount);
-			if (job.getTestMode().equals("Y")) log.info("* 이 작업은 테스트 모드로 업데이트 쿼리가 수행되지 않습니다. *");
-			if (targetCount > 0 && job.getTestMode().equals("N")) {
-				log.info("데이터 업데이트를 수행합니다...");
-				taskDao.execute(job.getPerforming(), job.getConditional());
+		if (this.jobsInfo.getJob() != null) {
+			dataAccess.dataSourceInitialize(this.jobsInfo.getDbUrl(), this.jobsInfo.getDbUsername(), dbPassword, this.jobsInfo.getDbms());
+			for (Job job : this.jobsInfo.getJob()) {
+				if (service.countByUnagreedCase(job.getJobSeq()) == 0) {
+					int targetCount = taskDao.count(job.getTargetTable(), job.getConditional());
+					log.info("작업 대상 ROWS : " + targetCount);
+					if (job.getTestMode().equals("Y")) log.info("* 이 작업은 테스트 모드로 업데이트 쿼리가 수행되지 않습니다. *");
+					if (targetCount > 0 && job.getTestMode().equals("N")) {
+						log.info("데이터 업데이트를 수행합니다...");
+						taskDao.execute(job.getPerforming(), job.getConditional());
+					}
+				}
 			}
+			dataAccess.connectionClose();
+		} else {
+			log.info("작업이 없습니다.");
 		}
-		dataAccess.connectionClose();
 		LocalDateTime endDate = LocalDateTime.now();
 		log.info("===============================================================");
 		log.info("작업 완료 - " + endDate.format(formatter) + " (소요시간: " + (ChronoUnit.MILLIS.between(beginDate, endDate)) + " ms)");

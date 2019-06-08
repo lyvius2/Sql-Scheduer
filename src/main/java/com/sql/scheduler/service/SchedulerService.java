@@ -3,6 +3,7 @@ package com.sql.scheduler.service;
 import com.sql.scheduler.component.QuartzTriggerBuilder;
 import com.sql.scheduler.entity.JobGroup;
 import org.quartz.*;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,14 @@ public class SchedulerService {
 	}
 
 	public void stopSchedule(JobGroup group) throws SchedulerException {
-		JobKey jobKey = new JobKey(String.format("%sJob", group.getGroupSeq()), String.format("%sTrigger", group.getGroupSeq()));
-		scheduler.deleteJob(jobKey);
+		Set<TriggerKey> triggerKeys = scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(Scheduler.DEFAULT_GROUP));
+		Trigger trigger = null;
+		for (TriggerKey key : triggerKeys) {
+			if (key.getName().equals(String.format("%sTrigger", group.getGroupSeq()))) {
+				trigger = scheduler.getTrigger(key);
+				break;
+			}
+		}
+		scheduler.deleteJob(trigger.getJobKey());
 	}
 }
