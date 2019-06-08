@@ -11,6 +11,7 @@ import com.sql.scheduler.code.DBMS;
 import com.sql.scheduler.code.DayCode;
 import com.sql.scheduler.code.MonthCode;
 import com.sql.scheduler.component.AES256;
+import com.sql.scheduler.component.EmailSender;
 import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobGroup;
@@ -20,6 +21,7 @@ import com.sql.scheduler.service.SchedulerService;
 import com.sql.scheduler.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,6 +39,9 @@ public class TaskController {
 
 	@Autowired
 	private AES256 aes256;
+
+	@Autowired
+	private EmailSender sender;
 
 	@Autowired
 	private GroupService groupService;
@@ -122,19 +127,18 @@ public class TaskController {
 		HashMap<String, Object> result = taskService.save(job);
 		Job resultJob = (Job)result.get("resultJob");
 		if ((boolean)result.get("isConfirmMailingCase")) {
-			String administrator = result.get("administrator").toString();
 			int registerSeq = (int)result.get("registerSeq");
-			List<Admin> checkers = taskService.findCheckers(administrator);
+			List<Admin> checkers = taskService.findCheckers(admin.getUsername());
 			checkers.stream().forEach(c -> {
 				taskService.save(resultJob.getJobSeq(), registerSeq, c.getUsername());
 			});
-
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setFrom(admin.getAdmin().getEmail());
+			message.setTo(checkers.stream().map(a -> a.getEmail()).toArray(String[]::new));
+			message.setSubject("스케줄러 작업에 대한 쿼리 확인 메일입니다.");
+			message.setText("테스트 메일입니다.");
+			sender.sendMail(message);
 		}
-
-
-
-
-
 		schedulerService.startSchedule(groupService.findOne(resultJob.getGroupSeq()));
 		return String.format("redirect:/task/%s?group=%s", resultJob.getJobSeq(), resultJob.getGroupSeq());
 	}

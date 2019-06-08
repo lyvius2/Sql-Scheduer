@@ -11,4 +11,8 @@ public class LoginAdminDetails extends User {
 		super(admin.getUsername(), admin.getPassword(), AuthorityUtils.createAuthorityList("ROLE_USER"));
 		this.admin = admin;
 	}
+
+	public Admin getAdmin() {
+		return admin;
+	}
 }
