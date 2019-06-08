@@ -16,13 +16,13 @@ public class QuartzTriggerBuilder {
 		JobDataMap dataMap = new JobDataMap();
 		dataMap.put("jobsInfo", jobGroup);
 		dataMap.put("dbPassword", aes256.AESDecoder(jobGroup.getDbPassword()));
-		return JobBuilder.newJob(QuartzJob.class).withIdentity(String.format("%sJob", jobGroup.getGroupName())).usingJobData(dataMap).storeDurably().build();
+		return JobBuilder.newJob(QuartzJob.class).withIdentity(String.format("%sJob", jobGroup.getGroupSeq())).usingJobData(dataMap).storeDurably().build();
 	}
 
-	public Trigger buildTrigger(String cron, String groupName) {
+	public Trigger buildTrigger(String cron, int groupSeq) {
 		CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cron)
 				.withMisfireHandlingInstructionFireAndProceed()
 				.inTimeZone(TimeZone.getDefault());
-		return TriggerBuilder.newTrigger().withIdentity(String.format("%sTrigger", groupName)).withSchedule(scheduleBuilder).build();
+		return TriggerBuilder.newTrigger().withIdentity(String.format("%sTrigger", groupSeq)).withSchedule(scheduleBuilder).build();
 	}
 }

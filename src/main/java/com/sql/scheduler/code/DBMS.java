@@ -3,7 +3,7 @@ package com.sql.scheduler.code;
 public enum DBMS {
 	POSTGRESQL("PostgreSQL", "org.postgresql.Driver"),
 	MSSQL("MS SQL Server", "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"),
-	ORACLE("Oracle DB", "oracle.jdbc.driver.OracleDriver"),
+	ORACLE("Oracle DB", "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"),
 	MYSQL("MySQL/MariaDB", "com.mysql.jdbc.Driver");
 
 	private String dbms;

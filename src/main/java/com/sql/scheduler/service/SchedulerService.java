@@ -2,9 +2,7 @@ package com.sql.scheduler.service;
 
 import com.sql.scheduler.component.QuartzTriggerBuilder;
 import com.sql.scheduler.entity.JobGroup;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
-import org.quartz.Trigger;
+import org.quartz.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +19,14 @@ public class SchedulerService {
 
 	public void startSchedule(JobGroup group) throws Exception {
 		JobDetail jobDetail = triggerBuilder.buildJobDetail(group);
-		Trigger trigger = triggerBuilder.buildTrigger(group.getCron(), group.getGroupName());
+		Trigger trigger = triggerBuilder.buildTrigger(group.getCron(), group.getGroupSeq());
 		Set<Trigger> triggers = new HashSet<>();
 		triggers.add(trigger);
 		scheduler.scheduleJob(jobDetail, triggers, true);
+	}
+
+	public void stopSchedule(JobGroup group) throws SchedulerException {
+		JobKey jobKey = new JobKey(String.format("%sJob", group.getGroupSeq()), String.format("%sTrigger", group.getGroupSeq()));
+		scheduler.deleteJob(jobKey);
 	}
 }

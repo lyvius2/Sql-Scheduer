@@ -13,7 +13,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -35,10 +37,10 @@ public class TaskService {
 		return jobRepository.findById(seq).get();
 	}
 
-	public Job save(Job job) {
+	public HashMap<String, Object> save(Job job) throws InterruptedException {
 		boolean isConfirmMailingCase = false;
 		int registerSeq = 1;
-		String registerEmail = job.getRegUsername();
+		String administrator = job.getRegUsername();
 		if (job.getJobSeq() != 0) {
 			Job prevJob = jobRepository.findById(job.getJobSeq()).get();
 			if (!job.getTargetTable().equals(prevJob.getTargetTable())
@@ -46,15 +48,19 @@ public class TaskService {
 					|| !job.getConditional().equals(prevJob.getConditional())) {
 				isConfirmMailingCase = true;
 				registerSeq = (agreeRepository.getMaxRegisterSeqByJobSeq(job.getJobSeq()) + 1);
-				registerEmail = job.getModUsername();
+				administrator = job.getModUsername();
 			}
 		} else {
 			isConfirmMailingCase = true;
 		}
 
 		Job resultJob = jobRepository.save(job);
-		if (isConfirmMailingCase) saveCheckerDataAndSendingEmail(registerEmail, resultJob.getTargetTable(), resultJob.getJobSeq(), registerSeq);
-		return resultJob;
+		HashMap<String, Object> result = new HashMap<>();
+		result.put("resultJob", resultJob);
+		result.put("isConfirmMailingCase", isConfirmMailingCase);
+		result.put("registerSeq", registerSeq);
+		result.put("administrator", administrator);
+		return result;
 	}
 
 	public int countByGroupSeq(int groupSeq) {
@@ -65,24 +71,72 @@ public class TaskService {
 		return jobRepository.findAllByGroupSeqOrderByTaskSeqAsc(groupSeq);
 	}
 
-	private void saveCheckerDataAndSendingEmail(String registerEmail, String targetTable, int jobSeq, int registerSeq) {
-		Admin register = adminRepository.findByUsername(registerEmail);
+	public List<Admin> findCheckers(String administrator) {
+		Admin register = adminRepository.findByUsername(administrator);
 		String senderEmail = register.getEmail();
-		Stream<Admin> checkers = adminRepository.findAllByType(AdminType.DEVELOPER).stream().filter(a -> !a.getEmail().equals(senderEmail));
+		List<Admin> checkers = adminRepository.findAllByType(AdminType.DEVELOPER).stream().filter(a -> !a.getEmail().equals(senderEmail)).collect(Collectors.toList());
+		return checkers;
+	}
 
-		checkers.forEach(c -> {
-			JobAgree jobAgree = new JobAgree();
-			jobAgree.setJobSeq(jobSeq);
-			jobAgree.setJobAgreeSeq(registerSeq);
-			jobAgree.setUsername(c.getUsername());
-			agreeRepository.save(jobAgree);
-		});
-
+	public JobAgree save(int jobSeq, int registerSeq, String checkerUsername) {
+		JobAgree jobAgree = new JobAgree();
+		jobAgree.setJobSeq(jobSeq);
+		jobAgree.setRegisterSeq(registerSeq);
+		jobAgree.setUsername(checkerUsername);
+		return agreeRepository.save(jobAgree);
+	}
+/*
+	public void sendingEmail(List<Admin> checkers) {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setFrom(senderEmail);
-		message.setTo(checkers.map(a -> a.getEmail()).toArray(String[]::new));
+		message.setTo(checkers.stream().map(a -> a.getEmail()).toArray(String[]::new));
 		message.setSubject(targetTable + " 배치 작업에 대한 쿼리 확인 메일입니다.");
 		message.setText("테스트 메일입니다.");
 		sender.sendMail(message);
 	}
+
+	public void saveCheckerDataAndSendingEmail(String administrator, String targetTable, int jobSeq, int registerSeq) throws InterruptedException {
+		Admin register = adminRepository.findByUsername(administrator);
+		String senderEmail = register.getEmail();
+		List<Admin> checkers = adminRepository.findAllByType(AdminType.DEVELOPER).stream().filter(a -> !a.getEmail().equals(senderEmail)).collect(Collectors.toList());
+
+		for (Admin checker : checkers) {
+			JobAgree jobAgree = new JobAgree();
+			jobAgree.setJobSeq(jobSeq);
+			jobAgree.setRegisterSeq(registerSeq);
+			jobAgree.setUsername(checker.getUsername());
+			agreeRepository.save(jobAgree);
+			//Thread.sleep(1000);
+		}
+
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setFrom(senderEmail);
+		message.setTo(checkers.stream().map(a -> a.getEmail()).toArray(String[]::new));
+		message.setSubject(targetTable + " 배치 작업에 대한 쿼리 확인 메일입니다.");
+		message.setText("테스트 메일입니다.");
+		sender.sendMail(message);
+	}
+	/*
+	private void saveCheckerDataAndSendingEmail(String administrator, String targetTable, int jobSeq, int registerSeq) throws InterruptedException {
+		Admin register = adminRepository.findByUsername(administrator);
+		String senderEmail = register.getEmail();
+		List<Admin> checkers = adminRepository.findAllByType(AdminType.DEVELOPER).stream().filter(a -> !a.getEmail().equals(senderEmail)).collect(Collectors.toList());
+
+		for (Admin checker : checkers) {
+			JobAgree jobAgree = new JobAgree();
+			jobAgree.setJobSeq(jobSeq);
+			jobAgree.setRegisterSeq(registerSeq);
+			jobAgree.setUsername(checker.getUsername());
+			agreeRepository.save(jobAgree);
+			//Thread.sleep(1000);
+		}
+
+		SimpleMailMessage message = new SimpleMailMessage();
+		message.setFrom(senderEmail);
+		message.setTo(checkers.stream().map(a -> a.getEmail()).toArray(String[]::new));
+		message.setSubject(targetTable + " 배치 작업에 대한 쿼리 확인 메일입니다.");
+		message.setText("테스트 메일입니다.");
+		sender.sendMail(message);
+	}
+	*/
 }

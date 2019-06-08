@@ -25,7 +25,6 @@ public class JobAgree {
 	@Enumerated(EnumType.STRING)
 	private AgreeStatus agreed = AgreeStatus.WAIT;
 
-	@Column(insertable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date regDt = new Date();
 

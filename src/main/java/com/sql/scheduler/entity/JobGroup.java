@@ -1,5 +1,6 @@
 package com.sql.scheduler.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sql.scheduler.code.DBMS;
 import lombok.Data;
 
@@ -23,7 +24,10 @@ public class JobGroup {
 
 	private String dbUrl;
 	private String dbUsername;
+
+	@JsonIgnore
 	private String dbPassword;
+
 	private String cron;
 
 	@Size(max = 1)

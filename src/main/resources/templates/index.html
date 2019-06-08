@@ -46,8 +46,8 @@
 			</div>-->
 			<small class="d-block text-right mt-3">
 				<a th:href="@{/task(group=${group.groupSeq})}" class="btn btn-sm btn-secondary">새 작업추가</a>
-				<button type="button" class="btn btn-sm btn-secondary">수정</button>
-				<button type="button" class="btn btn-sm btn-danger">삭제</button><!--
+				<a th:href="|javascript:openModModal(${group.groupSeq})|" class="btn btn-sm btn-secondary">수정</a>
+				<a th:href="|javascript:removeGroup(${group.groupSeq})|" class="btn btn-sm btn-danger">삭제</a><!--
 				<a href="#">All updates</a>-->
 			</small>
 		</div>
@@ -108,8 +108,70 @@
 
 		})
 
+		$('#registerJobGroup').on('hidden.bs.modal', clearModalGroupData)
+
 		function syncCronValue() {
-			$('input#cron').val($('#cronResult').val())
+			let cronResult = $('#cronResult').val()
+			$.get('/chkCron', {cron: cronResult}, function(data) {
+				if (data['validate']) {
+					$('span#cronParser').text(data['describe'])
+					$('input#cron').val(cronResult)
+				}
+			}, 'json')
+		}
+
+		function removeGroup(seq) {
+			$.ajax({
+				url: '/group/' + seq,
+				type: 'DELETE',
+				contentType: 'json'
+			}).then(function(data) {
+				if (data['success']) {
+					alert('삭제되었습니다.')
+					location.href = '/group'
+				}
+			})
+		}
+
+		function openModModal(seq) {
+			$.get('/group/' + seq, {}, bindModalGroupData, 'json')
+				.done(function(res) {
+					let cron = $('input#cron').val()
+					$.get('/chkCron', {cron: cron}, function(data) {
+						if (data['validate']) $('span#cronParser').text(data['describe'])
+					}, 'json')
+				})
+				.fail(function(e) {
+					alert('데이터를 불러오는데 실패했습니다.\n' + e['responseJSON']['error'] + ' ('
+						+ e['responseJSON']['status'] + ')\n' + e['responseJSON']['message'])
+				})
+		}
+
+		function bindModalGroupData(data) {
+			$('.modal input#groupName').val(data['groupName'])
+			$('.modal select#dbms').val(data['dbms'])
+			$('.modal input#dbUrl').val(data['dbUrl'])
+			$('.modal input#dbUsername').val(data['dbUsername'])
+			$('.modal input#dbPassword').val(data['dbPassword'])
+			$('.modal input#cron').val(data['cron'])
+			$('.modal input#groupSeq').val(data['groupSeq'])
+			if (data['mailing'] == 'Y') {
+				document.forms[0].chkMailing.checked = true
+				$('.modal input#mailing').val('Y')
+			} else {
+				document.forms[0].chkMailing.checked = false
+				$('.modal input#mailing').val('N')
+			}
+			$('div#registerJobGroup').modal('show')
+		}
+
+		function clearModalGroupData() {
+			$('.modal input#groupName').val('')
+			$('.modal input#dbUrl').val('')
+			$('.modal input#dbUsername').val('')
+			$('.modal input#dbPassword').val('')
+			$('.modal input#cron').val('')
+			$('.modal input#groupSeq').val('')
 		}
 
 		$(function () {

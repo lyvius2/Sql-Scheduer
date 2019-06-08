@@ -177,13 +177,7 @@
 						<input type="radio" id="cronDowIncrement" name="cronDay">
 						<label for="cronDowIncrement" class="nofloat">
 							<select id="cronDowIncrementStart" style="width:125px;">
-								<option value="1">Sunday</option>
-								<option value="2">Monday</option>
-								<option value="3">Tuesday</option>
-								<option value="4">Wednesday</option>
-								<option value="5">Thursday</option>
-								<option value="6">Friday</option>
-								<option value="7">Saturday</option>
+								<option th:each="dayCode : ${dayCodes}" th:value="${dayCode.seq}" th:text="${dayCode.fullname_kor}"></option>
 							</select> 부터
 							<select id="cronDowIncrementIncrement" style="width:50px;">
 								<th:block th:each="i: ${#numbers.sequence(1, 7)}">
@@ -215,20 +209,10 @@
 						<input type="radio" id="cronDowSpecific" name="cronDay">
 						<label for="cronDowSpecific" class="nofloat">특정 요일 (1개 이상 선택)</label>
 						<div style="margin-left:50px;">
-							<label for="cronDowSun" class="nofloat">Sunday</label>
-							<input type="checkbox" id="cronDowSun" name="cronDowSpecificSpecific" value="SUN">
-							<label for="cronDowMon" class="nofloat">Monday</label>
-							<input type="checkbox" id="cronDowMon" name="cronDowSpecificSpecific" value="MON">
-							<label for="cronDowTue" class="nofloat">Tuesday</label>
-							<input type="checkbox" id="cronDowTue" name="cronDowSpecificSpecific" value="TUE">
-							<label for="cronDowWed" class="nofloat">Wednesday</label>
-							<input type="checkbox" id="cronDowWed" name="cronDowSpecificSpecific" value="WED">
-							<label for="cronDowThu" class="nofloat">Thursday</label>
-							<input type="checkbox" id="cronDowThu" name="cronDowSpecificSpecific" value="THU">
-							<label for="cronDowFri" class="nofloat">Friday</label>
-							<input type="checkbox" id="cronDowFri" name="cronDowSpecificSpecific" value="FRI">
-							<label for="cronDowSat" class="nofloat">Saturday</label>
-							<input type="checkbox" id="cronDowSat" name="cronDowSpecificSpecific" value="SAT">
+							<th:block th:each="dayCode : ${dayCodes}">
+								<label th:for="${'cronDow' + dayCode}" class="nofloat" th:text="${dayCode.fullname_kor}"></label>
+								<input type="checkbox" th:id="${'cronDow' + dayCode}" name="cronDowSpecificSpecific" th:value="${#strings.toUpperCase(dayCode)}">
+							</th:block>
 						</div>
 					</div>
 					<div class="cron-option" style="padding-bottom:10px">
@@ -259,13 +243,7 @@
 						<input type="radio" id="cronLastSpecificDom" name="cronDay">
 						<label for="cronLastSpecificDom" class="nofloat">월 마지막 요일
 							<select id="cronLastSpecificDomDay" style="width:125px;">
-								<option value="1">Sunday</option>
-								<option value="2">Monday</option>
-								<option value="3">Tuesday</option>
-								<option value="4">Wednesday</option>
-								<option value="5">Thursday</option>
-								<option value="6">Friday</option>
-								<option value="7">Saturday</option>
+								<option th:each="dayCode : ${dayCodes}" th:value="${dayCode.seq}" th:text="${dayCode.fullname_kor}"></option>
 							</select>
 						</label>
 					</div>
@@ -305,13 +283,7 @@
 								<option value="5">5th</option>
 							</select> 번째
 							<select id="cronNthDayDay" style="width:125px;">
-								<option value="1">Sunday</option>
-								<option value="2">Monday</option>
-								<option value="3">Tuesday</option>
-								<option value="4">Wednesday</option>
-								<option value="5">Thursday</option>
-								<option value="6">Friday</option>
-								<option value="7">Saturday</option>
+								<option th:each="dayCode : ${dayCodes}" th:value="${dayCode.seq}" th:text="${dayCode.fullname_kor}"></option>
 							</select> 요일
 						</label>
 					</div>
@@ -327,18 +299,7 @@
 						<input type="radio" id="cronMonthIncrement" name="cronMonth">
 						<label for="cronMonthIncrement" class="nofloat">
 							<select id="cronMonthIncrementStart" style="width:125px;">
-								<option value="1">January</option>
-								<option value="2">February</option>
-								<option value="3">March</option>
-								<option value="4">April</option>
-								<option value="5">May</option>
-								<option value="6">June</option>
-								<option value="7">July</option>
-								<option value="8">August</option>
-								<option value="9">September</option>
-								<option value="10">October</option>
-								<option value="11">November</option>
-								<option value="12">December</option>
+								<option th:each="monthCode : ${monthCodes}" th:value="${monthCode.seq}" th:text="${monthCode.seq + '월'}"></option>
 							</select> 월로부터
 							<select id="cronMonthIncrementIncrement" style="width:50px;">
 								<th:block th:each="i: ${#numbers.sequence(1, 12)}">
@@ -353,42 +314,16 @@
 						<div style="margin-left:50px;">
 							<div>
 								<div>
-									<label for="cronMonth1" class="nofloat">January&nbsp;&nbsp;&nbsp;&nbsp;</label>
-									<input type="checkbox" id="cronMonth1" name="cronMonthSpecificSpecific" value="JAN">
-
-									<label for="cronMonth2" class="nofloat">February&nbsp;&nbsp;</label>
-									<input type="checkbox" id="cronMonth2" name="cronMonthSpecificSpecific" value="FEB">
-
-									<label for="cronMonth3" class="nofloat">March</label>
-									<input type="checkbox" id="cronMonth3" name="cronMonthSpecificSpecific" value="MAR">
-
-									<label for="cronMonth4" class="nofloat">April</label>
-									<input type="checkbox" id="cronMonth4" name="cronMonthSpecificSpecific" value="APR">
-
-									<label for="cronMonth5" class="nofloat">May</label>
-									<input type="checkbox" id="cronMonth5" name="cronMonthSpecificSpecific" value="MAY">
-
-									<label for="cronMonth6" class="nofloat">June</label>
-									<input type="checkbox" id="cronMonth6" name="cronMonthSpecificSpecific" value="JUN">
-
-									<label for="cronMonth7" class="nofloat">July</label>
-									<input type="checkbox" id="cronMonth7" name="cronMonthSpecificSpecific" value="JUL">
-
-									<label for="cronMonth8" class="nofloat">August</label>
-									<input type="checkbox" id="cronMonth8" name="cronMonthSpecificSpecific" value="AUG">
-
-									<label for="cronMonth9" class="nofloat">September</label>
-									<input type="checkbox" id="cronMonth9" name="cronMonthSpecificSpecific" value="SEP">
-
-									<label for="cronMonth10" class="nofloat">October</label>
-									<input type="checkbox" id="cronMonth10" name="cronMonthSpecificSpecific" value="OCT">
+									<th:block th:each="i: ${#numbers.sequence(1, 10)}">
+										<label th:for="${'cronMonth' + i}" class="nofloat" th:text="${monthCodes[i-1].seq + '월'}"></label>
+										<input type="checkbox" th:id="${'cronMonth' + i}" name="cronMonthSpecificSpecific" th:value="${monthCodes[i-1]}">
+									</th:block>
 								</div>
 								<div>
-									<label for="cronMonth11" class="nofloat">November</label>
-									<input type="checkbox" id="cronMonth11" name="cronMonthSpecificSpecific" value="NOV">
-
-									<label for="cronMonth12" class="nofloat">December</label>
-									<input type="checkbox" id="cronMonth12" name="cronMonthSpecificSpecific" value="DEC">
+									<th:block th:each="i: ${#numbers.sequence(11, 12)}">
+										<label th:for="${'cronMonth' + i}" class="nofloat" th:text="${monthCodes[i-1].seq + '월'}"></label>
+										<input type="checkbox" th:id="${'cronMonth' + i}" name="cronMonthSpecificSpecific" th:value="${monthCodes[i-1]}">
+									</th:block>
 								</div>
 							</div>
 						</div>
@@ -397,32 +332,10 @@
 						<input type="radio" id="cronMonthRange" name="cronMonth">
 						<label for="cronMonthRange" class="nofloat">
 							<select id="cronMonthRangeStart" style="width:125px;">
-								<option value="1">January</option>
-								<option value="2">February</option>
-								<option value="3">March</option>
-								<option value="4">April</option>
-								<option value="5">May</option>
-								<option value="6">June</option>
-								<option value="7">July</option>
-								<option value="8">August</option>
-								<option value="9">September</option>
-								<option value="10">October</option>
-								<option value="11">November</option>
-								<option value="12">December</option>
+								<option th:each="monthCode : ${monthCodes}" th:value="${monthCode.seq}" th:text="${monthCode.seq + '월'}"></option>
 							</select> 월과
 							<select id="cronMonthRangeEnd" style="width:125px;">
-								<option value="1">January</option>
-								<option value="2">February</option>
-								<option value="3">March</option>
-								<option value="4">April</option>
-								<option value="5">May</option>
-								<option value="6">June</option>
-								<option value="7">July</option>
-								<option value="8">August</option>
-								<option value="9">September</option>
-								<option value="10">October</option>
-								<option value="11">November</option>
-								<option value="12">December</option>
+								<option th:each="monthCode : ${monthCodes}" th:value="${monthCode.seq}" th:text="${monthCode.seq + '월'}"></option>
 							</select> 월 사이 매월
 						</label>
 					</div>

@@ -24,6 +24,10 @@ public class GroupService {
 		return (ArrayList<JobGroup>)repository.findAll();
 	}
 
+	public List<JobGroup> findAllByUse(String use) {
+		return repository.findAllByUse(use);
+	}
+
 	public JobGroup findOne(int groupSeq) {
 		Optional<JobGroup> optionalJobGroup = repository.findById(groupSeq);
 		if (optionalJobGroup.isPresent()) return optionalJobGroup.get();

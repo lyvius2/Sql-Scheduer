@@ -8,28 +8,35 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.parser.CronParser;
 import com.google.gson.Gson;
 import com.sql.scheduler.code.DBMS;
+import com.sql.scheduler.code.DayCode;
+import com.sql.scheduler.code.MonthCode;
+import com.sql.scheduler.component.AES256;
+import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobGroup;
 import com.sql.scheduler.service.GroupService;
+import com.sql.scheduler.service.LoginAdminDetails;
 import com.sql.scheduler.service.SchedulerService;
 import com.sql.scheduler.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Controller
 public class TaskController {
 	@Autowired
 	private Gson gson;
+
+	@Autowired
+	private AES256 aes256;
 
 	@Autowired
 	private GroupService groupService;
@@ -42,8 +49,10 @@ public class TaskController {
 
 	@RequestMapping(value = "/")
 	public String index(Model model) {
-		model.addAttribute("groupList", groupService.findAll());
+		model.addAttribute("groupList", groupService.findAllByUse("Y"));
 		model.addAttribute("dbmsList", DBMS.values());
+		model.addAttribute("dayCodes", DayCode.values());
+		model.addAttribute("monthCodes", MonthCode.values());
 		return "index";
 	}
 
@@ -53,13 +62,44 @@ public class TaskController {
 	}
 
 	@RequestMapping(value = "/group", method = RequestMethod.POST)
-	public String group(@ModelAttribute @Valid JobGroup jobGroup, Errors errors) throws Exception {
-		groupService.save(jobGroup);
+	public String group(@ModelAttribute @Valid JobGroup jobGroup, @AuthenticationPrincipal LoginAdminDetails admin, Errors errors) throws Exception {
+		boolean isNewJobGroup = true;
+		if (jobGroup.getGroupSeq() > 0) {
+			isNewJobGroup = false;
+			jobGroup.setModUsername(admin.getUsername());
+			jobGroup.setModDt(new Date());
+		} else {
+			jobGroup.setRegUsername(admin.getUsername());
+		}
+		JobGroup result = groupService.save(jobGroup);
+		if (!isNewJobGroup) schedulerService.startSchedule(result);
 		return "redirect:/group";
 	}
 
+	@RequestMapping(value = "/group/{seq}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+	@ResponseBody
+	public String group(@PathVariable Integer seq) throws Exception {
+		HashMap<String, Object> map = gson.fromJson(gson.toJson(groupService.findOne(seq)), HashMap.class);
+		map.put("dbPassword", aes256.AESDecoder(map.get("dbPassword").toString()));
+		return gson.toJson(map);
+	}
+
+	@RequestMapping(value = "/group/{seq}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
+	@ResponseBody
+	public String removeGroup(@PathVariable Integer seq) throws Exception {
+		HashMap<String, Object> map = new HashMap<>();
+		JobGroup jobGroup = groupService.findOne(seq);
+		jobGroup.setUse("N");
+		jobGroup = groupService.save(jobGroup);
+		if (jobGroup.getUse().equals("N")) {
+			map.put("success", true);
+			schedulerService.stopSchedule(jobGroup);
+		} else map.put("success", false);
+		return gson.toJson(map);
+	}
+
 	@RequestMapping(value = {"/task/{seq}", "/task"}, method = RequestMethod.GET)
-	public String task(@PathVariable Optional<Integer> seq, @RequestParam("group") int groupSeq, Model model) {
+	public String task(@PathVariable Optional<Integer> seq, @RequestParam("group") int groupSeq, Model model) throws Exception {
 		JobGroup jobGroup = groupService.findOne(groupSeq);
 		if (jobGroup != null) model.addAttribute("group", jobGroup);
 		else return "redirect:../";
@@ -71,11 +111,32 @@ public class TaskController {
 	}
 
 	@RequestMapping(value = "/task", method = RequestMethod.POST)
-	public String task(@ModelAttribute Job job) throws Exception {
-		if (job.getTaskSeq() == 0) job.setTaskSeq(taskService.countByGroupSeq(job.getGroupSeq()) + 1);
-		Job result = taskService.save(job);
-		schedulerService.startSchedule(groupService.findOne(result.getGroupSeq()));
-		return String.format("redirect:/task/%s?group=%s", result.getJobSeq(), result.getGroupSeq());
+	public String task(@ModelAttribute Job job, @AuthenticationPrincipal LoginAdminDetails admin) throws Exception {
+		if (job.getTaskSeq() == 0) {
+			job.setTaskSeq(taskService.countByGroupSeq(job.getGroupSeq()) + 1);
+			job.setRegUsername(admin.getUsername());
+		} else {
+			job.setModUsername(admin.getUsername());
+			job.setModDt(new Date());
+		}
+		HashMap<String, Object> result = taskService.save(job);
+		Job resultJob = (Job)result.get("resultJob");
+		if ((boolean)result.get("isConfirmMailingCase")) {
+			String administrator = result.get("administrator").toString();
+			int registerSeq = (int)result.get("registerSeq");
+			List<Admin> checkers = taskService.findCheckers(administrator);
+			checkers.stream().forEach(c -> {
+				taskService.save(resultJob.getJobSeq(), registerSeq, c.getUsername());
+			});
+
+		}
+
+
+
+
+
+		schedulerService.startSchedule(groupService.findOne(resultJob.getGroupSeq()));
+		return String.format("redirect:/task/%s?group=%s", resultJob.getJobSeq(), resultJob.getGroupSeq());
 	}
 
 	@RequestMapping(value = "/chkCron", produces = "application/json; charset=utf-8")
