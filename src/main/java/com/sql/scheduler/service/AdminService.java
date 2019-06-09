@@ -1,5 +1,6 @@
 package com.sql.scheduler.service;
 
+import com.sql.scheduler.code.AdminType;
 import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -26,6 +29,13 @@ public class AdminService {
 
 	public Admin findOne(String username) {
 		return adminRepository.findByUsername(username);
+	}
+
+	public List<Admin> findCheckers(String administrator) {
+		Admin register = adminRepository.findByUsername(administrator);
+		String senderEmail = register.getEmail();
+		List<Admin> checkers = adminRepository.findAllByType(AdminType.DEVELOPER).stream().filter(a -> !a.getEmail().equals(senderEmail)).collect(Collectors.toList());
+		return checkers;
 	}
 
 	public void checkAdminRegisterValue(Admin admin, String confirmPassword, Errors errors) {

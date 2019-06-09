@@ -8,4 +8,5 @@ import java.util.List;
 public interface JobRepository extends CrudRepository<Job, Integer> {
 	long countByGroupSeq(int groupSeq);
 	List<Job> findAllByGroupSeqOrderByTaskSeqAsc(int groupSeq);
+	void deleteByJobSeq(int jobSeq);
 }

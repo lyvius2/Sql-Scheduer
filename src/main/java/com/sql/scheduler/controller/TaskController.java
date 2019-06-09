@@ -15,10 +15,7 @@ import com.sql.scheduler.component.EmailSender;
 import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobGroup;
-import com.sql.scheduler.service.GroupService;
-import com.sql.scheduler.service.LoginAdminDetails;
-import com.sql.scheduler.service.SchedulerService;
-import com.sql.scheduler.service.TaskService;
+import com.sql.scheduler.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -42,6 +39,9 @@ public class TaskController {
 
 	@Autowired
 	private EmailSender sender;
+
+	@Autowired
+	private AdminService adminService;
 
 	@Autowired
 	private GroupService groupService;
@@ -128,7 +128,7 @@ public class TaskController {
 		Job resultJob = (Job)result.get("resultJob");
 		if ((boolean)result.get("isConfirmMailingCase")) {
 			int registerSeq = (int)result.get("registerSeq");
-			List<Admin> checkers = taskService.findCheckers(admin.getUsername());
+			List<Admin> checkers = adminService.findCheckers(admin.getUsername());
 			checkers.stream().forEach(c -> {
 				taskService.save(resultJob.getJobSeq(), registerSeq, c.getUsername());
 				SimpleMailMessage message = new SimpleMailMessage();
@@ -141,6 +141,13 @@ public class TaskController {
 		}
 		schedulerService.startSchedule(groupService.findOne(resultJob.getGroupSeq()));
 		return String.format("redirect:/task/%s?group=%s", resultJob.getJobSeq(), resultJob.getGroupSeq());
+	}
+
+	@RequestMapping(value = "/task/{seq}", method = RequestMethod.DELETE)
+	@ResponseBody
+	public String task(@PathVariable Optional<Integer> seq) {
+		if (seq.isPresent()) taskService.deleteByJobSeq(seq.get());
+		return "SUCCESS";
 	}
 
 	@RequestMapping(value = "/chkCron", produces = "application/json; charset=utf-8")

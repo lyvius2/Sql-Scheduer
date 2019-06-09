@@ -25,7 +25,14 @@
 					-->
 					<div class="d-flex justify-content-between align-items-center w-100">
 						<strong class="text-gray-dark" th:text="${task.targetTable}">Task</strong>
-						<a th:href="@{/task/{jobSeq}(jobSeq=${task.jobSeq},group=${task.groupSeq})}">Edit</a>
+						<div class="row">
+							<div class="col-md-4">
+								<a th:href="@{/task/{jobSeq}(jobSeq=${task.jobSeq},group=${task.groupSeq})}">Edit</a>
+							</div>
+							<div class="col-md-4">
+								<a th:href="|javascript:removeJob(${task.jobSeq})|">Delete</a>
+							</div>
+						</div>
 					</div>
 					<span class="d-block">@[[${task.jobDescription}]]</span>
 				</div>
@@ -130,6 +137,16 @@
 					alert('삭제되었습니다.')
 					location.href = '/group'
 				}
+			})
+		}
+
+		function removeJob(seq) {
+			$.ajax({
+				url: '/task/' + seq,
+				type: 'DELETE',
+				contentType: 'json'
+			}).then(function(data) {
+				location.href = '/group'
 			})
 		}
 
