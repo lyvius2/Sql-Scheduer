@@ -41,7 +41,7 @@ public class QuartzJob extends QuartzJobBean {
 		LocalDateTime beginDate = LocalDateTime.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		log.info("===============================================================");
-		log.info("작업 시작 - " + beginDate.format(formatter));
+		log.info(jobsInfo.getGroupName() + " 작업 시작 - " + beginDate.format(formatter));
 		log.info("===============================================================");
 		if (this.jobsInfo.getJob() != null) {
 			dataAccess.dataSourceInitialize(this.jobsInfo.getDbUrl(), this.jobsInfo.getDbUsername(), dbPassword, this.jobsInfo.getDbms());
@@ -62,7 +62,7 @@ public class QuartzJob extends QuartzJobBean {
 		}
 		LocalDateTime endDate = LocalDateTime.now();
 		log.info("===============================================================");
-		log.info("작업 완료 - " + endDate.format(formatter) + " (소요시간: " + (ChronoUnit.MILLIS.between(beginDate, endDate)) + " ms)");
+		log.info(jobsInfo.getGroupName() + " 작업 완료 - " + endDate.format(formatter) + " (소요시간: " + (ChronoUnit.MILLIS.between(beginDate, endDate)) + " ms)");
 		log.info("===============================================================");
 	}
 }

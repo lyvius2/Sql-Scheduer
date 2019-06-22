@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -71,5 +72,10 @@ public class TaskService {
 	public int countByUnagreedCase(int jobSeq) {
 		int registerSeq = agreeRepository.getMaxRegisterSeqByJobSeq(jobSeq);
 		return (int)agreeRepository.countByJobSeqAndRegisterSeqAndAgreedNot(jobSeq, registerSeq, AgreeStatus.AGREED);
+	}
+
+	public List<JobAgree> findByUsernameAndAgreedNotOrderByRegDtDesc(String username) {
+		List<JobAgree> jobAgrees = agreeRepository.findByUsernameAndAgreedNotOrderByRegDtDesc(username, AgreeStatus.AGREED);
+		return jobAgrees.stream().filter(j -> j.getRegisterSeq() == agreeRepository.getMaxRegisterSeqByJobSeq(j.getJobSeq())).collect(Collectors.toList());
 	}
 }
