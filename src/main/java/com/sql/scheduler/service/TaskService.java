@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,11 +62,21 @@ public class TaskService {
 		jobRepository.deleteByJobSeq(jobSeq);
 	}
 
+	public JobAgree findById(int jobAgreeSeq) {
+		Optional<JobAgree> jobAgree = agreeRepository.findById(jobAgreeSeq);
+		if (jobAgree != null) return jobAgree.get();
+		return null;
+	}
+
 	public JobAgree save(int jobSeq, int registerSeq, String checkerUsername) {
 		JobAgree jobAgree = new JobAgree();
 		jobAgree.setJobSeq(jobSeq);
 		jobAgree.setRegisterSeq(registerSeq);
 		jobAgree.setUsername(checkerUsername);
+		return agreeRepository.save(jobAgree);
+	}
+
+	public JobAgree save(JobAgree jobAgree) {
 		return agreeRepository.save(jobAgree);
 	}
 

@@ -1,7 +1,11 @@
 package com.sql.scheduler.controller;
 
+import com.google.gson.Gson;
 import com.sql.scheduler.code.AdminStatus;
+import com.sql.scheduler.code.AdminType;
+import com.sql.scheduler.code.AgreeStatus;
 import com.sql.scheduler.entity.Admin;
+import com.sql.scheduler.entity.JobAgree;
 import com.sql.scheduler.model.Reject;
 import com.sql.scheduler.service.AdminService;
 import com.sql.scheduler.service.LoginAdminDetails;
@@ -10,16 +14,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Controller
 public class AdminController {
+	@Autowired
+	private Gson gson;
+
 	@Autowired
 	private AdminService adminService;
 
@@ -40,5 +51,46 @@ public class AdminController {
 		});
 		model.addAttribute("rejects", rejects);
 		return "admin";
+	}
+
+	@RequestMapping(value = "/admin/{toBeStatus}/{username}", method = RequestMethod.POST)
+	public String admin(@PathVariable("toBeStatus") AdminStatus toBeStatus,
+	                    @PathVariable("username") String username) {
+		Admin admin = adminService.findOne(username);
+		admin.setStatus(toBeStatus);
+		admin.setModDt(new Date());
+		adminService.save(admin);
+		return "redirect:/admin";
+	}
+
+	@RequestMapping(value = "/admin/developer/{username}", method = RequestMethod.POST)
+	public String chgDeveloperStatus(@PathVariable("username") String username) {
+		Admin admin = adminService.findOne(username);
+		if (admin.getType().equals(AdminType.ADMIN)) admin.setType(AdminType.DEVELOPER);
+		else admin.setType(AdminType.ADMIN);
+		admin.setModDt(new Date());
+		adminService.save(admin);
+		return "redirect:/admin";
+	}
+
+	@RequestMapping(value = "/agree/{toBeStatus}/{jobAgreeSeq}",
+			method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	@ResponseBody
+	public String decision(@PathVariable("toBeStatus") AgreeStatus toBeStatus,
+	                       @PathVariable("jobAgreeSeq") Integer jobAgreeSeq,
+	                       @AuthenticationPrincipal LoginAdminDetails admin) {
+		HashMap<String, Object> map = new HashMap<>();
+		JobAgree jobAgree = taskService.findById(jobAgreeSeq);
+		if (jobAgree.getUsername().equals(admin.getUsername()) && !AgreeStatus.WAIT.equals(toBeStatus)) {
+			jobAgree.setAgreed(toBeStatus);
+			jobAgree.setModDt(new Date());
+			taskService.save(jobAgree);
+			map.put("success", true);
+			map.put("msg", toBeStatus.equals(AgreeStatus.AGREED) ? "승인되었습니다." : "반려되었습니다.\n이 작업은 재승인 때까지 진행되지 않습니다.");
+		} else {
+			map.put("success", false);
+			map.put("msg", "잘못된 접근입니다.");
+		}
+		return gson.toJson(map);
 	}
 }
