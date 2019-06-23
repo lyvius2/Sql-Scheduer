@@ -2,6 +2,7 @@ package com.sql.scheduler.component;
 
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobGroup;
+import com.sql.scheduler.entity.TaskLog;
 import com.sql.scheduler.service.TaskService;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -47,6 +48,8 @@ public class QuartzJob extends QuartzJobBean {
 			dataAccess.dataSourceInitialize(this.jobsInfo.getDbUrl(), this.jobsInfo.getDbUsername(), dbPassword, this.jobsInfo.getDbms());
 			for (Job job : this.jobsInfo.getJob()) {
 				if (service.countByUnagreedCase(job.getJobSeq()) == 0) {
+					taskDao.executeTask(job, new TaskLog());
+					/*
 					int targetCount = taskDao.count(job.getTargetTable(), job.getConditional());
 					log.info("작업 대상 ROWS : " + targetCount);
 					if (job.getTestMode().equals("Y")) log.info("* 이 작업은 테스트 모드로 업데이트 쿼리가 수행되지 않습니다. *");
@@ -54,6 +57,7 @@ public class QuartzJob extends QuartzJobBean {
 						log.info("데이터 업데이트를 수행합니다...");
 						taskDao.execute(job.getPerforming(), job.getConditional());
 					}
+					*/
 				}
 			}
 			dataAccess.connectionClose();
