@@ -1,5 +1,6 @@
 package com.sql.scheduler.service;
 
+import com.sql.scheduler.code.AdminStatus;
 import com.sql.scheduler.code.AdminType;
 import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.repository.AdminRepository;
@@ -38,7 +39,10 @@ public class AdminService {
 	public List<Admin> findCheckers(String administrator) {
 		Admin register = adminRepository.findByUsername(administrator);
 		String senderEmail = register.getEmail();
-		List<Admin> checkers = adminRepository.findAllByType(AdminType.DEVELOPER).stream().filter(a -> !a.getEmail().equals(senderEmail)).collect(Collectors.toList());
+		List<Admin> checkers = adminRepository.findAllByType(AdminType.DEVELOPER)
+				.stream()
+				.filter(a -> ((!a.getEmail().equals(senderEmail)) && a.getStatus().equals(AdminStatus.Y)))
+				.collect(Collectors.toList());
 		return checkers;
 	}
 

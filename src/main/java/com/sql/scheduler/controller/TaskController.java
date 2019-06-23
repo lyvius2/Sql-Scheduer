@@ -69,14 +69,17 @@ public class TaskController {
 	@RequestMapping(value = "/group", method = RequestMethod.POST)
 	public String group(@ModelAttribute @Valid JobGroup jobGroup, @AuthenticationPrincipal LoginAdminDetails admin, Errors errors) throws Exception {
 		boolean isNewJobGroup = true;
+		JobGroup result = null;
 		if (jobGroup.getGroupSeq() > 0) {
+			JobGroup origin = groupService.findOne(jobGroup.getGroupSeq());
+			groupService.bindNewerToOriginObjectData(origin, jobGroup);
+			origin.setModUsername(admin.getUsername());
+			result = groupService.save(origin);
 			isNewJobGroup = false;
-			jobGroup.setModUsername(admin.getUsername());
-			jobGroup.setModDt(new Date());
 		} else {
 			jobGroup.setRegUsername(admin.getUsername());
+			result = groupService.save(jobGroup);
 		}
-		JobGroup result = groupService.save(jobGroup);
 		if (!isNewJobGroup) schedulerService.startSchedule(result);
 		return "redirect:/group";
 	}
@@ -167,5 +170,17 @@ public class TaskController {
 			resultMap.put("validate", false);
 		}
 		return gson.toJson(resultMap);
+	}
+
+	@RequestMapping(value = "/test/{seq}")
+	@ResponseBody
+	public String test(@PathVariable("seq") Optional<Integer> seq) {
+		if (seq.isPresent()) {
+			int result = taskService.countByUnagreedCase(seq.get());
+			HashMap<String, Object> map = new HashMap<>();
+			map.put("Result", result);
+			return gson.toJson(map);
+		}
+		return "Failure";
 	}
 }

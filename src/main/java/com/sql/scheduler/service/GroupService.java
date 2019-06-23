@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,5 +38,16 @@ public class GroupService {
 	public JobGroup save(JobGroup jobGroup) throws Exception {
 		jobGroup.setDbPassword(aes256.AESEncoder(jobGroup.getDbPassword()));
 		return repository.save(jobGroup);
+	}
+
+	public void bindNewerToOriginObjectData(JobGroup origin, JobGroup newer) {
+		origin.setGroupName(newer.getGroupName());
+		origin.setDbUrl(newer.getDbUrl());
+		origin.setDbUsername(newer.getDbUsername());
+		origin.setDbPassword(newer.getDbPassword());
+		origin.setCron(newer.getCron());
+		origin.setDbms(newer.getDbms());
+		origin.setMailing(newer.getMailing());
+		origin.setModDt(new Date());
 	}
 }
