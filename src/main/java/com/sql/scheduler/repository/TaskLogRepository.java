@@ -6,6 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface TaskLogRepository extends MongoRepository<TaskLog, String> {
-	TaskLog findTopByJobSeqOrderBy_idDesc(int jobSeq);
-	Page<TaskLog> findAllByOrderBy_idDesc(Pageable pageable);
+	TaskLog findTopByJobSeq(int jobSeq);
+	Page<TaskLog> findAll(Pageable pageable);
 }

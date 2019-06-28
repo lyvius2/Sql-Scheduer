@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface SystemLogRepository extends MongoRepository<SystemLog, String>, PagingAndSortingRepository<SystemLog, String> {
+public interface  SystemLogRepository extends MongoRepository<SystemLog, String>, PagingAndSortingRepository<SystemLog, String> {
 	long countByStatus(ResultStatus status);
-	Page<SystemLog> findByStatusOrderBy_idDesc(ResultStatus status, Pageable pageable);
+	Page<SystemLog> findByStatus(ResultStatus status, Pageable pageable);
 }

@@ -23,18 +23,18 @@ public class LogService {
 
 	public HashMap<String, Object> findByStatusOrderBy_idDesc(ResultStatus status, int currPageNo) {
 		PageRequest pageRequest = PageRequest.of(currPageNo - 1, 10);
-		Page<SystemLog> page = systemLogRepository.findByStatusOrderBy_idDesc(status, pageRequest);
+		Page<SystemLog> page = systemLogRepository.findByStatus(status, pageRequest);
 		long count = systemLogRepository.countByStatus(status);
 		return rtnPagingDataMap(page, currPageNo, count);
 	}
 
 	public TaskLog findTopByJobSeqOrderBy_idDesc(int jobSeq) {
-		return taskLogRepository.findTopByJobSeqOrderBy_idDesc(jobSeq);
+		return taskLogRepository.findTopByJobSeq(jobSeq);
 	}
 
 	public HashMap<String, Object> findAllByOrderBy_idDesc(int currPageNo) {
 		PageRequest pageRequest = PageRequest.of(currPageNo - 1, 10);
-		Page<TaskLog> page = taskLogRepository.findAllByOrderBy_idDesc(pageRequest);
+		Page<TaskLog> page = taskLogRepository.findAll(pageRequest);
 		long count = taskLogRepository.count();
 		return rtnPagingDataMap(page, currPageNo, count);
 	}
