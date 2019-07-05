@@ -17,15 +17,28 @@
 </head>
 <body class="bg-light">
 	<div class="nav-scroller bg-white shadow-sm">
-		<nav class="nav nav-underline">
-			<a class="nav-link active" href="#">SQL Scheduler</a>
-			<a class="nav-link" href="/">
-				Task
-			</a>
-			<a class="nav-link" href="#">Log
-				<span class="badge badge-pill bg-light align-text-bottom">27</span>
-			</a>
-		</nav>
+		<div class="row justify-content-between w-100">
+			<div class="col-6">
+				<nav class="nav nav-underline">
+					<a class="nav-link active" href="#">SQL Scheduler</a>
+					<a class="nav-link" href="/">
+						Task
+					</a>
+					<a class="nav-link" href="/admin">
+						Admin
+					</a>
+					<a class="nav-link" href="#">Log
+						<span class="badge badge-pill bg-light align-text-bottom">27</span>
+					</a>
+				</nav>
+			</div>
+			<div class="col-2 d-flex justify-content-end">
+				<nav class="nav nav-underline">
+					<a class="nav-link" href="/logout">Log Out</a>
+				</nav>
+			</div>
+		</div>
+
 	</div>
 	<main role="main" class="container" layout:fragment="container">
 

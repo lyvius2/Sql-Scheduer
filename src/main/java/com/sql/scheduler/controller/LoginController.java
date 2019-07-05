@@ -45,7 +45,7 @@ public class LoginController {
 			hashMap.put("success", false);
 			hashMap.put("message", error.getDefaultMessage());
 		} else {
-			Admin resultAdmin = service.save(admin);
+			Admin resultAdmin = service.save(admin, true);
 			if (resultAdmin != null) {
 				hashMap.put("success", true);
 				hashMap.put("message", "등록되었습니다.\n수퍼 관리자의 확인 후 로그인이 가능합니다.");

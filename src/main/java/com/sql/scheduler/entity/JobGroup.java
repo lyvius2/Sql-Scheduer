@@ -60,7 +60,7 @@ public class JobGroup {
 	@Column(name = "mod_username")
 	private String modUsername;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "group_seq")
 	private List<Job> job;
 }

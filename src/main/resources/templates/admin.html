@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorator="layout/default">
 <head>
 	<title>Admin</title>
@@ -15,6 +16,11 @@
 
 		<div class="my-3 p-3 bg-white rounded shadow-sm">
 			<h6 class="border-bottom border-gray pb-2 mb-0">작업 SQL쿼리 검수</h6>
+			<div class="d-flex justify-content-center" th:if="${rejects.size() == 0}">
+				<p class="text-info">
+					<small>- 검수할 새 SQL작업이 없습니다. -</small>
+				</p>
+			</div>
 			<div class="row pt-3">
 				<div class="col-5">
 					<div class="list-group" id="list-tab" role="tablist">
@@ -22,11 +28,16 @@
 						   th:id="${'list-' + reject.jobAgree.jobAgreeSeq + '-list'}" th:attr="aria-controls=${reject.jobAgree.jobAgreeSeq}"
 						   class="list-group-item list-group-item-action" data-toggle="list" role="tab" >
 							<div class="d-flex justify-content-between">
-								<h6 class="mb-1" th:text="${reject.job.targetTable}"></h6>
-								<small th:text="${reject.job.regUsername}"></small>
+								<h6 class="mb-1" th:text="|${reject.jobAgree.agreed.getStatusName()} : ${reject.job.targetTable}|">
+									작업 테이블
+								</h6>
+								<small th:if="${reject.job.modUsername == null}"
+								       th:text="|*{reject.job.admin1.username}(*{reject.job.admin1.name})|">등록자 정보</small>
+								<small th:if="${reject.job.modUsername != null}"
+								       th:text="|*{reject.job.admin2.username}(*{reject.job.admin2.name})|">수정자 정보</small>
 							</div>
-							<p class="mb-1" th:text="${reject.job.jobDescription}"></p>
-							<small>DB접속정보</small>
+							<p class="mb-1" th:text="${reject.job.jobDescription}">작업 설명</p>
+							<small th:text="${reject.job.jobGroup.dbUrl}">DB접속정보</small>
 						</a>
 					</div>
 				</div>
@@ -37,7 +48,7 @@
 							<div class="d-flex mb-2" th:text="${reject.job.performing}">
 							</div>
 							<div class="d-flex" th:text="${reject.job.conditional}"></div>
-							<div class="d-flex justify-content-end">
+							<div class="d-flex justify-content-end" th:attr="data-seq=${reject.jobAgree.jobAgreeSeq}">
 								<button class="btn btn-sm btn-primary m-1">승인</button>
 								<button class="btn btn-sm btn-danger m-1">반려</button>
 							</div>
@@ -46,7 +57,84 @@
 				</div>
 			</div>
 		</div>
-	</main>
 
+		<div class="my-3 p-3 bg-white rounded shadow-sm" sec:authorize="hasRole('SUPER_ADMIN')">
+			<h6 class="border-bottom border-gray pb-2 mb-0">사용자 관리</h6>
+			<div class="media text-muted pt-3" th:each="waiter : ${waiters}">
+				<img data-src="holder.js/32x32?theme=thumb&amp;bg=6f42c1&amp;fg=6f42c1&amp;size=1" alt="32x32" class="mr-2 rounded" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_165e26e6b4d%20text%20%7B%20fill%3A%236f42c1%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A2pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_165e26e6b4d%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20fill%3D%22%236f42c1%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2212.3046875%22%20y%3D%2216.9%22%3E32x32%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" data-holder-rendered="true" style="width: 32px; height: 32px;">
+				<div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+					<div class="d-flex justify-content-between align-items-center w-100">
+						<div class="row w-100">
+							<div class="col-auto mr-auto">
+								<strong class="text-gray-dark" th:text="|${waiter.username} (${waiter.name}) - ${waiter.status.getStatusName()}|">Full Name</strong>
+							</div>
+							<div class="col-auto">
+								<a href="javascript:void(0)" class="enroll" th:attr="data-username=${waiter.username}">승인처리</a>
+							</div>
+						</div>
+					</div>
+					<span class="d-block" th:text="|@${waiter.type} / ${waiter.dept} / ${waiter.email} / ${waiter.regDt}|">@userinfo</span>
+				</div>
+			</div>
+			<div class="media text-muted pt-3" th:each="user, stat : ${users}">
+				<img data-src="holder.js/32x32?theme=thumb&amp;bg=007bff&amp;fg=007bff&amp;size=1" alt="32x32" class="mr-2 rounded" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_165a4d5f7eb%20text%20%7B%20fill%3A%23007bff%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A2pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_165a4d5f7eb%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20fill%3D%22%23007bff%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2212.3046875%22%20y%3D%2216.9%22%3E32x32%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" data-holder-rendered="true" style="width: 32px; height: 32px;">
+				<div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+					<div class="d-flex justify-content-between align-items-center w-100">
+						<div class="row w-100">
+							<div class="col-auto mr-auto">
+								<strong class="text-gray-dark" th:text="|${user.username} (${user.name}) - ${user.status.getStatusName()}|">Full Name</strong>
+							</div>
+							<div class="col-auto">
+								<div class="custom-control custom-checkbox" th:attr="data-username=${user.username}">
+									<input type="checkbox" class="custom-control-input" th:name="|chkDeveloper[${stat.index}]|" th:id="|chkDeveloper${stat.index}|" th:checked="*{user.type.name() == 'DEVELOPER'}?:'checked'">
+									<label class="custom-control-label" th:for="|chkDeveloper${stat.index}|">개발자</label>
+								</div>
+							</div>
+							<div class="col-auto">
+								<a href="javascript:void(0)" class="drop" th:attr="data-username=${user.username}">탈퇴처리</a>
+							</div>
+						</div>
+					</div>
+					<span class="d-block" th:text="|@${user.type} / ${user.dept} / ${user.email} / ${user.regDt}|">@userinfo</span>
+				</div>
+			</div>
+			<div class="media text-muted pt-3" th:each="leaving : ${leavings}">
+				<img data-src="holder.js/32x32?theme=thumb&amp;bg=e83e8c&amp;fg=e83e8c&amp;size=1" alt="32x32" class="mr-2 rounded" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2232%22%20height%3D%2232%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%20preserveAspectRatio%3D%22none%22%3E%3Cdefs%3E%3Cstyle%20type%3D%22text%2Fcss%22%3E%23holder_165e26e6b4d%20text%20%7B%20fill%3A%23e83e8c%3Bfont-weight%3Abold%3Bfont-family%3AArial%2C%20Helvetica%2C%20Open%20Sans%2C%20sans-serif%2C%20monospace%3Bfont-size%3A2pt%20%7D%20%3C%2Fstyle%3E%3C%2Fdefs%3E%3Cg%20id%3D%22holder_165e26e6b4d%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20fill%3D%22%23e83e8c%22%3E%3C%2Frect%3E%3Cg%3E%3Ctext%20x%3D%2212.3046875%22%20y%3D%2216.9%22%3E32x32%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E" data-holder-rendered="true" style="width: 32px; height: 32px;">
+				<div class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+					<div class="d-flex justify-content-between align-items-center w-100">
+						<strong class="text-gray-dark" th:text="|${leaving.username} (${leaving.name}) - ${leaving.status.getStatusName()}|">Full Name</strong>
+					</div>
+					<span class="d-block" th:text="|@${leaving.type} / ${leaving.dept} / ${leaving.email} / ${leaving.regDt}|">@userinfo</span>
+				</div>
+			</div>
+		</div>
+		<form method="post"></form>
+	</main>
+	<script layout:fragment="script">
+		$('.tab-content button').on('click', function() {
+			let seq = $(this).parent().attr('data-seq')
+			let status = $(this).hasClass('btn-primary') ? 'AGREED':'REJECT'
+			$.post('/agree/' + status + '/' + seq, {}, function(res) {
+				alert(res['msg'])
+				location.href = '/admin'
+			}, 'json')
+		})
+
+		$('a.drop, a.enroll').on('click', function() {
+			let username = $(this).attr('data-username')
+			let action = $(this).hasClass('enroll') ? '/admin/Y/' : '/admin/N/'
+			let comment = ($(this).hasClass('enroll') ? '승인' : '미사용') + ' 처리하시겠습니까?'
+			if (confirm(comment)) {
+				document.forms[0].action = action + username
+				document.forms[0].submit()
+			}
+		})
+
+		$('.custom-control-input').on('change', function() {
+			let username = $(this).parent().attr('data-username')
+			$.post('/admin/developer/' + username, {}, function(res) {
+			}, 'text')
+		})
+	</script>
 </body>
 </html>

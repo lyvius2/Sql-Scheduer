@@ -1,6 +1,7 @@
 package com.sql.scheduler.entity;
 
 import lombok.Data;
+import org.hibernate.annotations.JoinColumnOrFormula;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -54,4 +55,16 @@ public class Job {
 
 	@Column(name = "mod_username")
 	private String modUsername;
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "group_seq", insertable = false, updatable = false)
+	private JobGroup jobGroup;
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumnOrFormula(column = @JoinColumn(name = "reg_username", referencedColumnName = "username", insertable = false, updatable = false))
+	private Admin admin1;
+
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumnOrFormula(column = @JoinColumn(name = "mod_username", referencedColumnName = "username", insertable = false, updatable = false))
+	private Admin admin2;
 }

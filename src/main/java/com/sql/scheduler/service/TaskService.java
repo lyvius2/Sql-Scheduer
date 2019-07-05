@@ -24,7 +24,9 @@ public class TaskService {
 	private JobAgreeRepository agreeRepository;
 
 	public Job findOne(int seq) {
-		return jobRepository.findById(seq).get();
+		Optional<Job> optionalJob = jobRepository.findById(seq);
+		if (optionalJob.isPresent()) return optionalJob.get();
+		return null;
 	}
 
 	public HashMap<String, Object> save(Job job) {

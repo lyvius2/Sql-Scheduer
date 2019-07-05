@@ -5,6 +5,7 @@ import com.sql.scheduler.code.AdminStatus;
 import com.sql.scheduler.code.AdminType;
 import com.sql.scheduler.code.AgreeStatus;
 import com.sql.scheduler.entity.Admin;
+import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobAgree;
 import com.sql.scheduler.model.Reject;
 import com.sql.scheduler.service.AdminService;
@@ -42,13 +43,17 @@ public class AdminController {
 		List<Admin> admins = adminService.findAll();
 		model.addAttribute("waiters", admins.stream().filter(a -> a.getStatus().equals(AdminStatus.E)).collect(toList()));
 		model.addAttribute("users", admins.stream().filter(a -> a.getStatus().equals(AdminStatus.Y)).collect(toList()));
-		model.addAttribute("leaving", admins.stream().filter(a -> a.getStatus().equals(AdminStatus.N)).collect(toList()));
+		model.addAttribute("leavings", admins.stream().filter(a -> a.getStatus().equals(AdminStatus.N)).collect(toList()));
 
 		List<Reject> rejects = new ArrayList<>();
-		taskService.findByUsernameAndAgreedNotOrderByRegDtDesc(admin.getUsername()).stream().forEach(r -> {
-			Reject reject = new Reject(r, taskService.findOne(r.getJobSeq()));
-			rejects.add(reject);
-		});
+		taskService.findByUsernameAndAgreedNotOrderByRegDtDesc(admin.getUsername()).stream()
+				.forEach(r -> {
+					Job j = taskService.findOne(r.getJobSeq());
+					if (j != null) {
+						Reject reject = new Reject(r, j);
+						rejects.add(reject);
+					}
+				});
 		model.addAttribute("rejects", rejects);
 		return "admin";
 	}
@@ -59,18 +64,19 @@ public class AdminController {
 		Admin admin = adminService.findOne(username);
 		admin.setStatus(toBeStatus);
 		admin.setModDt(new Date());
-		adminService.save(admin);
+		adminService.save(admin, false);
 		return "redirect:/admin";
 	}
 
 	@RequestMapping(value = "/admin/developer/{username}", method = RequestMethod.POST)
+	@ResponseBody
 	public String chgDeveloperStatus(@PathVariable("username") String username) {
 		Admin admin = adminService.findOne(username);
 		if (admin.getType().equals(AdminType.ADMIN)) admin.setType(AdminType.DEVELOPER);
 		else admin.setType(AdminType.ADMIN);
 		admin.setModDt(new Date());
-		adminService.save(admin);
-		return "redirect:/admin";
+		adminService.save(admin, false);
+		return "SUCCESS";
 	}
 
 	@RequestMapping(value = "/agree/{toBeStatus}/{jobAgreeSeq}",

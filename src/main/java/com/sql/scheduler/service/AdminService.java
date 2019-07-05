@@ -23,8 +23,8 @@ public class AdminService {
 	@Autowired
 	private AdminRepository adminRepository;
 
-	public Admin save(Admin admin) {
-		admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+	public Admin save(Admin admin, boolean pwdEncode) {
+		if (pwdEncode) admin.setPassword(passwordEncoder.encode(admin.getPassword()));
 		return adminRepository.save(admin);
 	}
 
