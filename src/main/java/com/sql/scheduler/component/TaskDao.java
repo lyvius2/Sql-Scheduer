@@ -27,49 +27,6 @@ public class TaskDao {
 	@Autowired
 	private Gson gson;
 
-	public int count(String targetTable, String conditional) {
-		NamedParameterJdbcTemplate jdbcTemplate = this.dataAccess.getJdbcTemplate();
-		StringBuffer countQuery = new StringBuffer();
-		countQuery.append("SELECT count(*)\n");
-		countQuery.append("FROM ");
-		countQuery.append(targetTable);
-		countQuery.append("\n");
-		countQuery.append(conditional);
-		log.info("타겟팅 : " + targetTable);
-		return jdbcTemplate.queryForObject(countQuery.toString(), new HashMap<>(), Integer.class);
-	}
-
-	public void execute(String performing, String conditional) {
-		NamedParameterJdbcTemplate jdbcTemplate = this.dataAccess.getJdbcTemplate();
-		if (!StringUtils.isEmpty(performing) &&
-				!StringUtils.isEmpty(conditional) &&
-				StringUtils.contains(conditional.toLowerCase(), "where ")) {
-			DataSourceTransactionManager transactionManager = this.dataAccess.getTransactionManager();
-			TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
-			TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
-
-			StringBuffer updateQuery = new StringBuffer();
-			updateQuery.append(performing);
-			updateQuery.append(conditional);
-
-			try {
-				int result = jdbcTemplate.update(updateQuery.toString(), new HashMap<>());
-				if (result > 0) {
-					log.info("업데이트 성공");
-					transactionManager.commit(transactionStatus);
-				} else {
-					log.info("업데이트 실패");
-					transactionManager.rollback(transactionStatus);
-				}
-			} catch (Exception e) {
-				e.getStackTrace();
-				log.error(e.toString());
-				log.info("업데이트 실패");
-				transactionManager.rollback(transactionStatus);
-			}
-		}
-	}
-
 	public TaskLog executeTask(Job job, TaskLog taskLog) {
 		NamedParameterJdbcTemplate jdbcTemplate = this.dataAccess.getJdbcTemplate();
 		StringBuffer targetDataQuery = new StringBuffer();
@@ -102,6 +59,7 @@ public class TaskDao {
 
 				StringBuffer updateQuery = new StringBuffer();
 				updateQuery.append(job.getPerforming());
+				updateQuery.append(" \n");
 				updateQuery.append(job.getConditional());
 				taskLog.setExecutedSql(updateQuery.toString());
 

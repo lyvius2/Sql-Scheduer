@@ -41,7 +41,9 @@
 					<td class="small">
 						<a v-bind:href="'/task/' + item.jobSeq + '?group=' + item.groupSeq" v-text="item.targetTable"></a>
 					</td>
-					<td v-text="item.targetCount" class="small"></td>
+					<td class="small">
+						<a href="javascript:void(0)" v-text="item.targetCount" v-on:click="targetView(item.targetData)"></a>
+					</td>
 					<td><a href="javascript:void(0)" class="badge badge-secondary" v-if="item.resultStatus != 'NOTPERFORMANCE'" v-on:click="modal('ExecutedSQL', item.executedSql)">VIEW</a></td>
 					<td class="small">{{item.beginTime|formatDate}}</td>
 					<td class="small">{{item.endTime|formatDate}}</td>
@@ -73,8 +75,20 @@
 							<span aria-hidden="true">&times;</span>
 						</button>
 					</div>
-					<div class="modal-body">
-						{{content}}
+					<div class="modal-body" v-bind:style="table.column != null ? 'overflow-x: auto':''">
+						<span v-html="content"></span>
+						<table class="table table-sm table-bordered small" style="font-size: 50%" v-if="table.column != null">
+							<thead class="thead-dark">
+							<tr>
+								<th scope="col" v-for="(item, index) in table.column" v-text="item"></th>
+							</tr>
+							</thead>
+							<tbody>
+							<tr v-for="(rowItem, rowIndex) in table.rows">
+								<td v-for="(item, index) in table.column" v-text="rowItem[item]"></td>
+							</tr>
+							</tbody>
+						</table>
 					</div>
 				</div>
 			</div>
@@ -89,7 +103,11 @@
 			el: '#modal',
 			data: {
 				title: null,
-				content: null
+				content: null,
+				table: {
+					column: null,
+					rows: null
+				}
 			}
 		})
 
@@ -105,10 +123,26 @@
 				},
 				modal: function(title, content) {
 					modalData.title = title
-					modalData.content = content
+					modalData.content = content.split('\n').join('<br />')
 					$('#modal').modal('show')
+				},
+				targetView: function(dataRows) {
+					let json = JSON.parse(dataRows)
+					if (json.length > 0) {
+						modalData.title = '업데이트 대상 데이터 Rows'
+						modalData.table.column = Object.getOwnPropertyNames(json[0])
+						modalData.table.rows = json
+						$('#modal').modal('show')
+					}
 				}
 			}
+		})
+
+		$('#modal').on('hide.bs.modal', function() {
+			modalData.title = null
+			modalData.content = null
+			modalData.table.column = null
+			modalData.table.rows = null
 		})
 
 		function getTaskLogList(currPageNo) {
