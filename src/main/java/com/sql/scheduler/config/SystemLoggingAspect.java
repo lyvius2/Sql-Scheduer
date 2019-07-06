@@ -33,8 +33,7 @@ public class SystemLoggingAspect {
 	public Object onAroundHandlerForLogging(ProceedingJoinPoint joinPoint) throws Throwable {
 		Date beginTime = new Date();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		log.info(joinPoint.getSignature().getName());
-		log.info(joinPoint.getTarget().getClass().getSimpleName());
+
 		Object returnObj = joinPoint.proceed();
 
 		Date endTime = new Date();

@@ -31,7 +31,10 @@ public class GroupService {
 
 	public JobGroup findOne(int groupSeq) {
 		Optional<JobGroup> optionalJobGroup = repository.findById(groupSeq);
-		if (optionalJobGroup.isPresent()) return optionalJobGroup.get();
+		if (optionalJobGroup.isPresent()) {
+			JobGroup jobGroup = optionalJobGroup.get();
+			return jobGroup;
+		}
 		else return null;
 	}
 

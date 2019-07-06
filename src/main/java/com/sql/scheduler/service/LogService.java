@@ -21,20 +21,20 @@ public class LogService {
 	@Autowired
 	private TaskLogRepository taskLogRepository;
 
-	public HashMap<String, Object> findByStatusOrderBy_idDesc(ResultStatus status, int currPageNo) {
+	public HashMap<String, Object> findByStatus(ResultStatus status, int currPageNo) {
 		PageRequest pageRequest = PageRequest.of(currPageNo - 1, 10);
 		Page<SystemLog> page = systemLogRepository.findByStatus(status, pageRequest);
 		long count = systemLogRepository.countByStatus(status);
 		return rtnPagingDataMap(page, currPageNo, count);
 	}
 
-	public TaskLog findTopByJobSeqOrderBy_idDesc(int jobSeq) {
+	public TaskLog findTopByJobSeq(int jobSeq) {
 		return taskLogRepository.findTopByJobSeq(jobSeq);
 	}
 
-	public HashMap<String, Object> findAllByOrderBy_idDesc(int currPageNo) {
+	public HashMap<String, Object> findAll(int currPageNo) {
 		PageRequest pageRequest = PageRequest.of(currPageNo - 1, 10);
-		Page<TaskLog> page = taskLogRepository.findAll(pageRequest);
+		Page<TaskLog> page = taskLogRepository.findAllByOrderByBeginTimeDesc(pageRequest);
 		long count = taskLogRepository.count();
 		return rtnPagingDataMap(page, currPageNo, count);
 	}

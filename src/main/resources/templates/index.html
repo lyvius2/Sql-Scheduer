@@ -142,6 +142,7 @@
 					}, 'json')
 				})
 				.fail(function(e) {
+					console.log(e)
 					alert('데이터를 불러오는데 실패했습니다.\n' + e['responseJSON']['error'] + ' ('
 						+ e['responseJSON']['status'] + ')\n' + e['responseJSON']['message'])
 				})

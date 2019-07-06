@@ -3,6 +3,8 @@ package com.sql.scheduler.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sql.scheduler.code.DBMS;
 import lombok.Data;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -60,7 +62,12 @@ public class JobGroup {
 	@Column(name = "mod_username")
 	private String modUsername;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "group_seq")
 	private List<Job> job;
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+	}
 }

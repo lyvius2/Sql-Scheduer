@@ -1,6 +1,8 @@
 package com.sql.scheduler.entity;
 
 import lombok.Data;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.annotations.JoinColumnOrFormula;
 
 import javax.persistence.*;
@@ -57,14 +59,15 @@ public class Job {
 	private String modUsername;
 
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinColumn(name = "group_seq", insertable = false, updatable = false)
-	private JobGroup jobGroup;
-
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumnOrFormula(column = @JoinColumn(name = "reg_username", referencedColumnName = "username", insertable = false, updatable = false))
 	private Admin admin1;
 
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumnOrFormula(column = @JoinColumn(name = "mod_username", referencedColumnName = "username", insertable = false, updatable = false))
 	private Admin admin2;
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+	}
 }

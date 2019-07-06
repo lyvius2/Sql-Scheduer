@@ -7,8 +7,10 @@ import com.sql.scheduler.code.AgreeStatus;
 import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobAgree;
+import com.sql.scheduler.entity.JobGroup;
 import com.sql.scheduler.model.Reject;
 import com.sql.scheduler.service.AdminService;
+import com.sql.scheduler.service.GroupService;
 import com.sql.scheduler.service.LoginAdminDetails;
 import com.sql.scheduler.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +38,9 @@ public class AdminController {
 	private AdminService adminService;
 
 	@Autowired
+	private GroupService groupService;
+
+	@Autowired
 	private TaskService taskService;
 
 	@RequestMapping(value = "/admin", method = RequestMethod.GET)
@@ -50,7 +55,10 @@ public class AdminController {
 				.forEach(r -> {
 					Job j = taskService.findOne(r.getJobSeq());
 					if (j != null) {
-						Reject reject = new Reject(r, j);
+						JobGroup jg = groupService.findOne(j.getGroupSeq());
+						HashMap map = gson.fromJson(gson.toJson(j), HashMap.class);
+						map.put("dbUrl", jg.getDbUrl());
+						Reject reject = new Reject(r, map);
 						rejects.add(reject);
 					}
 				});

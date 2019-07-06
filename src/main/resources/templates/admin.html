@@ -3,7 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorator="layout/default">
 <head>
-	<title>Admin</title>
+	<title>Administrate</title>
 </head>
 <body>
 	<main layout:fragment="container">
@@ -22,7 +22,7 @@
 				</p>
 			</div>
 			<div class="row pt-3">
-				<div class="col-5">
+				<div class="col-7">
 					<div class="list-group" id="list-tab" role="tablist">
 						<a th:each="reject : ${rejects}" th:href="${'#list-' + reject.jobAgree.jobAgreeSeq}"
 						   th:id="${'list-' + reject.jobAgree.jobAgreeSeq + '-list'}" th:attr="aria-controls=${reject.jobAgree.jobAgreeSeq}"
@@ -31,17 +31,17 @@
 								<h6 class="mb-1" th:text="|${reject.jobAgree.agreed.getStatusName()} : ${reject.job.targetTable}|">
 									작업 테이블
 								</h6>
-								<small th:if="${reject.job.modUsername == null}"
+								<small th:if="${reject.job['modUsername'] == null}"
 								       th:text="|*{reject.job.admin1.username}(*{reject.job.admin1.name})|">등록자 정보</small>
-								<small th:if="${reject.job.modUsername != null}"
+								<small th:if="${reject.job['modUsername'] != null}"
 								       th:text="|*{reject.job.admin2.username}(*{reject.job.admin2.name})|">수정자 정보</small>
 							</div>
 							<p class="mb-1" th:text="${reject.job.jobDescription}">작업 설명</p>
-							<small th:text="${reject.job.jobGroup.dbUrl}">DB접속정보</small>
+							<small th:text="${reject.job.dbUrl}">DB접속정보</small>
 						</a>
 					</div>
 				</div>
-				<div class="col-7">
+				<div class="col-5">
 					<div class="tab-content" id="nav-tabContent">
 						<div th:each="reject : ${rejects}" th:id="${'list-' + reject.jobAgree.jobAgreeSeq}"
 						     th:attr="aria-labelledby=${'list-' + reject.jobAgree.jobAgreeSeq}" class="tab-pane fade" role="tabpanel">

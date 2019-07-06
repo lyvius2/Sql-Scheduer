@@ -2,6 +2,8 @@ package com.sql.scheduler.entity;
 
 import com.sql.scheduler.code.AgreeStatus;
 import lombok.Data;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -35,4 +37,9 @@ public class JobAgree {
 	@Column(insertable = false, name = "mod_dt")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modDt;
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+	}
 }

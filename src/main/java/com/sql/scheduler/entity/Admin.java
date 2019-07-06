@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sql.scheduler.code.AdminStatus;
 import com.sql.scheduler.code.AdminType;
 import lombok.Data;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -55,4 +57,9 @@ public class Admin implements Serializable {
 	@Column(insertable = false, name = "mod_dt")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modDt;
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+	}
 }

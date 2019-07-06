@@ -7,5 +7,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface TaskLogRepository extends MongoRepository<TaskLog, String> {
 	TaskLog findTopByJobSeq(int jobSeq);
-	Page<TaskLog> findAll(Pageable pageable);
+	Page<TaskLog> findAllByOrderByBeginTimeDesc(Pageable pageable);
 }

@@ -24,6 +24,7 @@ public class TaskLog {
 	private String jobDescription;
 	private Date beginTime;
 	private Date endTime;
+	private long proceedTime;
 	private String executedSql;
 	private String targetData;
 	private int targetCount;

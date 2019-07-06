@@ -46,6 +46,7 @@ public class TaskLoggingAspect {
 		taskLog.setResultStatus(ResultStatus.ERROR);
 		taskLog.setErrorMsg(exceptionObj.toString());
 		taskLog.setEndTime(new Date());
+		taskLog.setProceedTime(taskLog.getEndTime().getTime() - taskLog.getBeginTime().getTime());
 		taskLogRepository.save(taskLog);
 	}
 }
