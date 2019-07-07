@@ -79,6 +79,12 @@ public class LoggingUtil {
 						break;
 				}
 				break;
+			case "LogController":
+				switch(methodName) {
+					case "log":
+						comment += "로그 기록 접속";
+						break;
+				}
 		}
 		return comment;
 	}

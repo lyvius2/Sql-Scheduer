@@ -8,23 +8,42 @@ import com.sql.scheduler.repository.SystemLogRepository;
 import com.sql.scheduler.repository.TaskLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class LogService {
+	@Autowired
+	private MongoOperations mongoOperations;
+
 	@Autowired
 	private SystemLogRepository systemLogRepository;
 
 	@Autowired
 	private TaskLogRepository taskLogRepository;
 
-	public HashMap<String, Object> findByStatus(ResultStatus status, int currPageNo) {
+	public HashMap<String, Object> findAllSystemLog(int currPageNo) {
 		PageRequest pageRequest = PageRequest.of(currPageNo - 1, 10);
-		Page<SystemLog> page = systemLogRepository.findByStatus(status, pageRequest);
-		long count = systemLogRepository.countByStatus(status);
+		Page<SystemLog> page = systemLogRepository.findAllByOrderByBeginTimeDesc(pageRequest);
+		long count = systemLogRepository.count();
+		return rtnPagingDataMap(page, currPageNo, count);
+	}
+
+	public HashMap<String, Object> findByStatusSystemLog(ResultStatus status, int currPageNo) {
+		PageRequest pageRequest = PageRequest.of(currPageNo - 1, 10);
+		Query query = new Query(Criteria.where("status").is(status.name())).with(Sort.by(new Order(Sort.Direction.DESC, "beginTime"))).with(pageRequest);
+		List<SystemLog> list = mongoOperations.find(query, SystemLog.class, "systemLog");
+		long count = mongoOperations.count(query, SystemLog.class);
+		Page<SystemLog> page = new PageImpl<>(list, pageRequest, count);
 		return rtnPagingDataMap(page, currPageNo, count);
 	}
 
@@ -32,7 +51,7 @@ public class LogService {
 		return taskLogRepository.findTopByJobSeq(jobSeq);
 	}
 
-	public HashMap<String, Object> findAll(int currPageNo) {
+	public HashMap<String, Object> findAllTaskLog(int currPageNo) {
 		PageRequest pageRequest = PageRequest.of(currPageNo - 1, 10);
 		Page<TaskLog> page = taskLogRepository.findAllByOrderByBeginTimeDesc(pageRequest);
 		long count = taskLogRepository.count();

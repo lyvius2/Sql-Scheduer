@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 @ControllerAdvice
 public class SystemExceptionHandler {
@@ -25,6 +26,7 @@ public class SystemExceptionHandler {
 	public void handleException(Exception e, HttpServletRequest request) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		SystemLog systemErrorLog = loggingUtil.createLogging(request, ResultStatus.ERROR, auth != null ? auth.getName():null);
+		systemErrorLog.setBeginTime(new Date());
 		systemErrorLog.setMessage(e.toString());
 		systemErrorLog.setTraceLog(ExceptionUtils.getStackTrace(e));
 		systemLogRepository.save(systemErrorLog);

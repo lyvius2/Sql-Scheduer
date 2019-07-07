@@ -14,56 +14,129 @@
 			</div>
 		</div>
 
-		<div class="my-3 p-3 bg-white rounded shadow-sm" id="taskLogList">
-			<h6 class="border-bottom border-gray pb-2 mb-0">스케줄 작업 로그</h6>
-			<table class="table table-sm">
-				<thead class="thead-light small">
-				<tr>
-					<th scope="col">#</th>
-					<th scope="col">결과</th>
-					<th scope="col">테이블</th>
-					<th scope="col">Target Rows</th>
-					<th scope="col">Query</th>
-					<th scope="col">시작</th>
-					<th scope="col">종료</th>
-					<th scope="col">소요시간</th>
-				</tr>
-				</thead>
-				<tbody>
-				<tr v-for="(item, index) in list" v-bind:key="item._id">
-					<th scope="col" class="small">{{((paging.currPageNo - 1) * paging.rowsPerPage) + index + 1}}</th>
-					<td>
-						<span class="badge badge-primary" v-if="item.resultStatus == 'SUCCESS'" v-text="item.resultStatus"></span>
-						<a href="javascript:void(0)" class="badge badge-danger" v-if="item.resultStatus == 'ERROR'" v-on:click="modal('Error Message', item.errorMsg)">{{item.resultStatus}}</a>
-						<a href="javascript:void(0)" class="badge badge-warning" v-if="item.resultStatus == 'FAILURE'" v-on:click="modal('Error Message', item.errorMsg)">{{item.resultStatus}}</a>
-						<a href="javascript:void(0)" class="badge badge-dark" v-if="item.resultStatus == 'NOTPERFORMANCE'" v-on:click="modal('Message', item.errorMsg)">{{item.resultStatus}}</a>
-					</td>
-					<td class="small">
-						<a v-bind:href="'/task/' + item.jobSeq + '?group=' + item.groupSeq" v-text="item.targetTable"></a>
-					</td>
-					<td class="small">
-						<a href="javascript:void(0)" v-text="item.targetCount" v-on:click="targetView(item.targetData)"></a>
-					</td>
-					<td><a href="javascript:void(0)" class="badge badge-secondary" v-if="item.resultStatus != 'NOTPERFORMANCE'" v-on:click="modal('ExecutedSQL', item.executedSql)">VIEW</a></td>
-					<td class="small">{{item.beginTime|formatDate}}</td>
-					<td class="small">{{item.endTime|formatDate}}</td>
-					<td class="small">{{item.proceedTime}} ms</td>
-				</tr>
-				</tbody>
-			</table>
-			<nav aria-label="paging">
-				<ul class="pagination pagination-sm">
-					<li class="page-item" v-bind:class="paging.currPageNo == paging.firstPageNo ? 'disabled':''">
-						<a href="javascript:void(0)" class="page-link" v-on:click="move(paging.firstPageNo)">Prev</a>
-					</li>
-					<li class="page-item" v-for="num in paging.pagingNumbers" v-bind:class="num == paging.currPageNo ? 'active':''">
-						<a href="javascript:void(0)" class="page-link" v-on:click="num != paging.currPageNo ? move(num):''">{{num}}</a>
-					</li>
-					<li class="page-item" v-bind:class="paging.currPageNo == paging.finalPageNo ? 'disabled':''">
-						<a href="javascript:void(0)" class="page-link" v-on:click="move(paging.finalPageNo)">Next</a>
-					</li>
-				</ul>
+		<div class="my-3 p-3 bg-white rounded shadow-sm">
+			<nav>
+				<div class="nav nav-tabs" id="nav-tab" role="tablist">
+					<a href="#nav-taskLog" class="nav-item nav-link active" id="nav-taskLog-tab" data-toggle="tab" role="tab" aria-controls="nav-taskLog" aria-selected="true">
+						스케줄
+					</a>
+					<a href="#nav-systemLog" class="nav-item nav-link" id="nav-systemLog-tab" data-toggle="tab" role="tab" aria-controls="nav-systemLog" aria-selected="true">
+						접속기록
+					</a>
+				</div>
 			</nav>
+			<div class="tab-content" id="nav-tabContent">
+				<div class="tab-pane fade show active" id="nav-taskLog" role="tabpanel" aria-labelledby="nav-taskLog-tab">
+					<h6 class="border-bottom border-gray pb-2 mb-0 mt-3">스케줄 작업 로그</h6>
+					<table class="table table-sm small">
+						<thead class="thead-light">
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">결과</th>
+							<th scope="col">테이블</th>
+							<th scope="col">Target Rows</th>
+							<th scope="col">Query</th>
+							<th scope="col">시작</th>
+							<th scope="col">종료</th>
+							<th scope="col">소요시간</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr v-for="(item, index) in task.list" v-bind:key="item._id">
+							<th scope="col">{{((task.paging.currPageNo - 1) * task.paging.rowsPerPage) + index + 1}}</th>
+							<td>
+								<span class="badge badge-primary" v-if="item.resultStatus == 'SUCCESS'" v-text="item.resultStatus"></span>
+								<a href="javascript:void(0)" class="badge badge-danger" v-if="item.resultStatus == 'ERROR'" v-on:click="modal('Error Message', item.errorMsg)">{{item.resultStatus}}</a>
+								<a href="javascript:void(0)" class="badge badge-warning" v-if="item.resultStatus == 'FAILURE'" v-on:click="modal('Error Message', item.errorMsg)">{{item.resultStatus}}</a>
+								<a href="javascript:void(0)" class="badge badge-dark" v-if="item.resultStatus == 'NOTPERFORMANCE'" v-on:click="modal('Message', item.errorMsg)">{{item.resultStatus}}</a>
+							</td>
+							<td>
+								<a v-bind:href="'/task/' + item.jobSeq + '?group=' + item.groupSeq" v-text="item.targetTable"></a>
+							</td>
+							<td>
+								<a href="javascript:void(0)" v-text="item.targetCount" v-on:click="targetView(item.targetData)"></a>
+							</td>
+							<td><a href="javascript:void(0)" class="badge badge-secondary" v-if="item.resultStatus != 'NOTPERFORMANCE'" v-on:click="modal('ExecutedSQL', item.executedSql)">VIEW</a></td>
+							<td>{{item.beginTime|formatDate}}</td>
+							<td>{{item.endTime|formatDate}}</td>
+							<td>{{item.proceedTime}} ms</td>
+						</tr>
+						</tbody>
+					</table>
+					<nav aria-label="paging">
+						<ul class="pagination pagination-sm">
+							<li class="page-item" v-bind:class="task.paging.currPageNo == task.paging.firstPageNo ? 'disabled':''">
+								<a href="javascript:void(0)" class="page-link" v-on:click="move('task', task.paging.firstPageNo)">Prev</a>
+							</li>
+							<li class="page-item" v-for="num in task.paging.pagingNumbers" v-bind:class="num == task.paging.currPageNo ? 'active':''">
+								<a href="javascript:void(0)" class="page-link" v-on:click="num != task.paging.currPageNo ? move('task', num):''">{{num}}</a>
+							</li>
+							<li class="page-item" v-bind:class="task.paging.currPageNo == task.paging.finalPageNo ? 'disabled':''">
+								<a href="javascript:void(0)" class="page-link" v-on:click="move('task', task.paging.finalPageNo)">Next</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+				<div class="tab-pane fade" id="nav-systemLog" role="tabpanel" aria-labelledby="nav-systemLog-tab">
+					<div class="d-flex justify-content-between align-items-center w-100 border-bottom border-gray">
+						<h6 class="pb-2 mb-0 mt-3">시스템 접속 로그</h6>
+						<form class="form-inline pb-2 mb-0 mt-1">
+							<div class="form-group">
+								<label for="status" class="sr-only">STATUS</label>
+								<select name="status" id="status" class="form-control form-control-sm">
+									<option value="">모두 보기</option>
+									<th:block th:each="item : ${status}">
+										<option th:value="${item}" th:text="${item}"></option>
+									</th:block>
+								</select>
+							</div>
+						</form>
+					</div>
+					<table class="table table-sm small">
+						<thead class="thead-light">
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">Status</th>
+							<th scope="col">Method</th>
+							<th scope="col">Request Path</th>
+							<th scope="col">Parameters</th>
+							<th scope="col">Access Time</th>
+							<th scope="col">ID</th>
+							<th scope="col">IP</th>
+							<th scope="col">Comment</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr v-for="(item, index) in system.list" v-bind:key="item._id">
+							<th scope="col">{{((system.paging.currPageNo - 1) * system.paging.rowsPerPage) + index + 1}}</th>
+							<td>
+								<span class="badge" v-bind:class="item.status == 'SUCCESS' ? 'badge-primary':'badge-danger'">{{item.status}}</span>
+							</td>
+							<td v-text="item.method"></td>
+							<td v-text="item.requestPath"></td>
+							<td v-text="item.params"></td>
+							<td>{{item.beginTime|formatDate}}</td>
+							<td v-text="item.username"></td>
+							<td v-text="item.ip"></td>
+							<td v-text="item.status == 'SUCCESS' ? item.comment:item.message"></td>
+						</tr>
+						</tbody>
+					</table>
+					<nav aria-label="paging">
+						<ul class="pagination pagination-sm">
+							<li class="page-item" v-bind:class="system.paging.currPageNo == system.paging.firstPageNo ? 'disabled':''">
+								<a href="javascript:void(0)" class="page-link" v-on:click="move('system', system.paging.firstPageNo)">Prev</a>
+							</li>
+							<li class="page-item" v-for="num in system.paging.pagingNumbers" v-bind:class="num == system.paging.currPageNo ? 'active':''">
+								<a href="javascript:void(0)" class="page-link" v-on:click="num != system.paging.currPageNo ? move('system', num):''">{{num}}</a>
+							</li>
+							<li class="page-item" v-bind:class="system.paging.currPageNo == system.paging.finalPageNo ? 'disabled':''">
+								<a href="javascript:void(0)" class="page-link" v-on:click="move('system', system.paging.finalPageNo)">Next</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
 		</div>
 
 		<div id="modal" class="modal fade" tabindex="-1" role="dialog">
@@ -111,15 +184,22 @@
 			}
 		})
 
-		let taskLog = new Vue({
-			el: '#taskLogList',
+		let logContent = new Vue({
+			el: '#nav-tabContent',
 			data: {
-				list: new Array(),
-				paging: new Object()
+				task: {
+					list: new Array(),
+					paging: new Object()
+				},
+				system: {
+					list: new Array(),
+					paging: new Object()
+				}
 			},
 			methods: {
-				move: function(pageNo) {
-					getTaskLogList(pageNo)
+				move: function(flag, pageNo) {
+					if (flag == 'task') getTaskLogList(pageNo)
+					else getSystemLogList(pageNo)
 				},
 				modal: function(title, content) {
 					modalData.title = title
@@ -145,16 +225,43 @@
 			modalData.table.rows = null
 		})
 
-		function getTaskLogList(currPageNo) {
-			$.get('/taskLog', {currPageNo: currPageNo}, function(res) {
-				taskLog.list = res.list
-				taskLog.paging = res.paging
+		$('select#status').on('change', function() {
+			getSystemLogList(1)
+		})
+
+		$('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+			console.log($(e.target).attr('id'))
+			console.log($(e.relatedTarget).attr('id'))
+			if ($(e.target).attr('id') == 'nav-systemLog-tab' && logContent['system'].list.length == 0) {
+				getSystemLogList(1)
+			}
+		})
+
+		function getSystemLogList(currPageNo) {
+			let status = $('select#status').val()
+			let url = status == '' ? '/systemLog':'/systemLog/' + status
+			$.get(url, {currPageNo: currPageNo}, function(res) {
+				logContent['system'].list = res.list
+				logContent['system'].paging = res.paging
 			}, 'json')
 				.done(function(res) {
 					console.log(res)
 				})
 				.fail(function(error) {
-					alert('에러가 발생하였습니다.\n' + error.toString())
+					alert('에러가 발생하였습니다.')
+				})
+		}
+
+		function getTaskLogList(currPageNo) {
+			$.get('/taskLog', {currPageNo: currPageNo}, function(res) {
+				logContent['task'].list = res.list
+				logContent['task'].paging = res.paging
+			}, 'json')
+				.done(function(res) {
+					console.log(res)
+				})
+				.fail(function(error) {
+					alert('에러가 발생하였습니다.')
 				})
 		}
 

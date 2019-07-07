@@ -29,7 +29,8 @@ public class SystemLoggingAspect {
 	@Autowired
 	private SystemLogRepository systemLogRepository;
 
-	@Around("execution(* com.sql.scheduler.controller.*.*(..))")
+	@Around("execution(* com.sql.scheduler.controller.AdminController.*(..)) || execution(* com.sql.scheduler.controller.LogController.log(..)) || " +
+			"execution(* com.sql.scheduler.controller.LoginController.*(..)) || execution(* com.sql.scheduler.controller.TaskController.*(..))")
 	public Object onAroundHandlerForLogging(ProceedingJoinPoint joinPoint) throws Throwable {
 		Date beginTime = new Date();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
