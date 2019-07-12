@@ -23,6 +23,9 @@
 					<a href="#nav-systemLog" class="nav-item nav-link" id="nav-systemLog-tab" data-toggle="tab" role="tab" aria-controls="nav-systemLog" aria-selected="true">
 						접속기록
 					</a>
+					<a href="#nav-removeLog" class="nav-item nav-link" id="nav-removeLog-tab" data-toggle="tab" role="tab" aria-controls="nav-removeLog" aria-selected="true">
+						로그삭제기록
+					</a>
 				</div>
 			</nav>
 			<div class="tab-content" id="nav-tabContent">
@@ -42,6 +45,9 @@
 						</tr>
 						</thead>
 						<tbody>
+						<tr v-if="task.list.length == 0">
+							<td colspan="8"><p class="text-info d-flex justify-content-center">- 스케줄 실행 이력이 없습니다. -</p></td>
+						</tr>
 						<tr v-for="(item, index) in task.list" v-bind:key="item._id">
 							<th scope="col">{{((task.paging.currPageNo - 1) * task.paging.rowsPerPage) + index + 1}}</th>
 							<td>
@@ -63,19 +69,26 @@
 						</tr>
 						</tbody>
 					</table>
-					<nav aria-label="paging">
-						<ul class="pagination pagination-sm">
-							<li class="page-item" v-bind:class="task.paging.currPageNo == task.paging.firstPageNo ? 'disabled':''">
-								<a href="javascript:void(0)" class="page-link" v-on:click="move('task', task.paging.firstPageNo)">Prev</a>
-							</li>
-							<li class="page-item" v-for="num in task.paging.pagingNumbers" v-bind:class="num == task.paging.currPageNo ? 'active':''">
-								<a href="javascript:void(0)" class="page-link" v-on:click="num != task.paging.currPageNo ? move('task', num):''">{{num}}</a>
-							</li>
-							<li class="page-item" v-bind:class="task.paging.currPageNo == task.paging.finalPageNo ? 'disabled':''">
-								<a href="javascript:void(0)" class="page-link" v-on:click="move('task', task.paging.finalPageNo)">Next</a>
-							</li>
-						</ul>
-					</nav>
+					<div class="d-flex bd-highlight">
+						<div class="mr-auto p-2 bd-highlight">
+							<nav aria-label="paging">
+								<ul class="pagination pagination-sm">
+									<li class="page-item" v-bind:class="task.paging.firstPageNo == task.paging.startPageNo ? 'disabled':''">
+										<a href="javascript:void(0)" class="page-link" v-on:click="move('task', task.paging.startPageNo - 1)">Prev</a>
+									</li>
+									<li class="page-item" v-for="num in task.paging.pagingNumbers" v-bind:class="num == task.paging.currPageNo ? 'active':''">
+										<a href="javascript:void(0)" class="page-link" v-on:click="num != task.paging.currPageNo ? move('task', num):''">{{num}}</a>
+									</li>
+									<li class="page-item" v-bind:class="task.paging.finalPageNo == task.paging.endPageNo ? 'disabled':''">
+										<a href="javascript:void(0)" class="page-link" v-on:click="move('task', task.paging.endPageNo + 1)">Next</a>
+									</li>
+								</ul>
+							</nav>
+						</div>
+						<div class="p-2 bd-highlight">
+							<a href="javascript:removeLog('task')"  class="btn btn-sm btn-danger">로그삭제</a>
+						</div>
+					</div>
 				</div>
 				<div class="tab-pane fade" id="nav-systemLog" role="tabpanel" aria-labelledby="nav-systemLog-tab">
 					<div class="d-flex justify-content-between align-items-center w-100 border-bottom border-gray">
@@ -107,6 +120,9 @@
 						</tr>
 						</thead>
 						<tbody>
+						<tr v-if="system.list.length == 0">
+							<td colspan="9"><p class="text-info d-flex justify-content-center">- 접속로그가 없습니다. -</p></td>
+						</tr>
 						<tr v-for="(item, index) in system.list" v-bind:key="item._id">
 							<th scope="col">{{((system.paging.currPageNo - 1) * system.paging.rowsPerPage) + index + 1}}</th>
 							<td>
@@ -114,27 +130,63 @@
 							</td>
 							<td v-text="item.method"></td>
 							<td v-text="item.requestPath"></td>
-							<td v-text="item.params"></td>
+							<td><span v-if="item.params != '{}'">{{item.params}}</span></td>
 							<td>{{item.beginTime|formatDate}}</td>
 							<td v-text="item.username"></td>
 							<td v-text="item.ip"></td>
-							<td v-text="item.status == 'SUCCESS' ? item.comment:item.message"></td>
+							<td>
+								<span v-if="item.status == 'SUCCESS'" v-text="item.comment"></span>
+								<a href="javascript:void(0)" v-if="item.status == 'ERROR'" v-text="item.message" v-on:click="modal('Trace Log', item.traceLog)"></a>
+							</td>
 						</tr>
 						</tbody>
 					</table>
-					<nav aria-label="paging">
-						<ul class="pagination pagination-sm">
-							<li class="page-item" v-bind:class="system.paging.currPageNo == system.paging.firstPageNo ? 'disabled':''">
-								<a href="javascript:void(0)" class="page-link" v-on:click="move('system', system.paging.firstPageNo)">Prev</a>
-							</li>
-							<li class="page-item" v-for="num in system.paging.pagingNumbers" v-bind:class="num == system.paging.currPageNo ? 'active':''">
-								<a href="javascript:void(0)" class="page-link" v-on:click="num != system.paging.currPageNo ? move('system', num):''">{{num}}</a>
-							</li>
-							<li class="page-item" v-bind:class="system.paging.currPageNo == system.paging.finalPageNo ? 'disabled':''">
-								<a href="javascript:void(0)" class="page-link" v-on:click="move('system', system.paging.finalPageNo)">Next</a>
-							</li>
-						</ul>
-					</nav>
+					<div class="d-flex bd-highlight">
+						<div class="mr-auto p-2 bd-highlight">
+							<nav aria-label="paging">
+								<ul class="pagination pagination-sm">
+									<li class="page-item" v-bind:class="system.paging.firstPageNo == system.paging.startPageNo ? 'disabled':''">
+										<a href="javascript:void(0)" class="page-link" v-on:click="move('system', system.paging.startPageNo - 1)">Prev</a>
+									</li>
+									<li class="page-item" v-for="num in system.paging.pagingNumbers" v-bind:class="num == system.paging.currPageNo ? 'active':''">
+										<a href="javascript:void(0)" class="page-link" v-on:click="num != system.paging.currPageNo ? move('system', num):''">{{num}}</a>
+									</li>
+									<li class="page-item" v-bind:class="system.paging.finalPageNo == system.paging.endPageNo ? 'disabled':''">
+										<a href="javascript:void(0)" class="page-link" v-on:click="move('system', system.paging.endPageNo + 1)">Next</a>
+									</li>
+								</ul>
+							</nav>
+						</div>
+						<div class="p-2 bd-highlight">
+							<a href="javascript:removeLog('system')" class="btn btn-sm btn-danger">로그삭제</a>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane fade" id="nav-removeLog" role="tabpanel" aria-labelledby="nav-removeLog-tab">
+					<h6 class="border-bottom border-gray pb-2 mb-0 mt-3">로그삭제</h6>
+					<table class="table table-sm small">
+						<thead class="thead-light">
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">삭제대상</th>
+							<th scope="col">삭제갯수</th>
+							<th scope="col">삭제자</th>
+							<th scope="col">수행시각</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr v-if="remove.list.length == 0">
+							<td colspan="5"><p class="text-info d-flex justify-content-center">- 삭제이력이 없습니다. -</p></td>
+						</tr>
+						<tr v-for="(item, index) in remove.list" v-bind:key="item.seq">
+							<th scope="col">{{index + 1}}</th>
+							<td v-text="item.deleteTarget"></td>
+							<td v-text="item.targetCount"></td>
+							<td v-text="item.username"></td>
+							<td>{{item.dt|formatDate}}</td>
+						</tr>
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>
@@ -194,6 +246,9 @@
 				system: {
 					list: new Array(),
 					paging: new Object()
+				},
+				remove: {
+					list: new Array()
 				}
 			},
 			methods: {
@@ -234,8 +289,39 @@
 			console.log($(e.relatedTarget).attr('id'))
 			if ($(e.target).attr('id') == 'nav-systemLog-tab' && logContent['system'].list.length == 0) {
 				getSystemLogList(1)
+				return
+			}
+			if ($(e.target).attr('id') == 'nav-removeLog-tab' && logContent['remove'].list.length == 0) {
+				getRemoveLogList()
+				return
 			}
 		})
+
+		function removeLog(flag) {
+			$.ajax({
+				url: '/removeLog/' + flag,
+				type: 'DELETE',
+				contentType: 'text'
+			}).then(function(data) {
+				if (flag == 'task') {
+					getTaskLogList(1)
+				} else {
+					getSystemLogList(1)
+				}
+			})
+		}
+
+		function getRemoveLogList() {
+			$.get('/deleteLog', {}, function(res) {
+				logContent['remove'].list = res
+			}, 'json')
+				.done(function(res) {
+					console.log(res)
+				})
+				.fail(function(error) {
+					alert('에러가 발생하였습니다.')
+				})
+		}
 
 		function getSystemLogList(currPageNo) {
 			let status = $('select#status').val()

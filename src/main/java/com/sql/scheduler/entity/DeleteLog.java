@@ -6,18 +6,18 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table(indexes = {@Index(name = "index_job_history_comment", columnList = "comment", unique = false)})
+@Table(indexes = {@Index(name = "index_delete_log", columnList = "seq", unique = true)})
 @Data
-public class JobHistory {
+public class DeleteLog {
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 	private int seq;
 
-	@Column(name = "group_seq")
-	private int groupSeq;
+	@Column(name = "delete_target")
+	private String deleteTarget;
 
-	@Column(name = "job_seq")
-	private int jobSeq;
+	@Column(name = "target_count")
+	private int targetCount;
 
 	@Column(name = "username")
 	private String username;
@@ -25,7 +25,4 @@ public class JobHistory {
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "dt")
 	private Date dt = new Date();
-
-	@Column(name = "comment")
-	private String comment;
 }

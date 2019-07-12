@@ -23,7 +23,7 @@ public class Paging {
 
 	public Paging(int currPageNo, int rowsPerPage) {
 		this.currPageNo = currPageNo;
-		this.sizeOfPage = 5;
+		this.sizeOfPage = 10;
 		this.rowsPerPage = (rowsPerPage!=0)?rowsPerPage:5;
 	}
 

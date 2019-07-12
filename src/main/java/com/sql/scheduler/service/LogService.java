@@ -1,9 +1,11 @@
 package com.sql.scheduler.service;
 
 import com.sql.scheduler.code.ResultStatus;
+import com.sql.scheduler.entity.DeleteLog;
 import com.sql.scheduler.entity.SystemLog;
 import com.sql.scheduler.entity.TaskLog;
 import com.sql.scheduler.model.Paging;
+import com.sql.scheduler.repository.DeleteLogRepository;
 import com.sql.scheduler.repository.SystemLogRepository;
 import com.sql.scheduler.repository.TaskLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,6 +33,9 @@ public class LogService {
 
 	@Autowired
 	private TaskLogRepository taskLogRepository;
+
+	@Autowired
+	private DeleteLogRepository deleteLogRepository;
 
 	public HashMap<String, Object> findAllSystemLog(int currPageNo) {
 		PageRequest pageRequest = PageRequest.of(currPageNo - 1, 10);
@@ -56,6 +62,26 @@ public class LogService {
 		Page<TaskLog> page = taskLogRepository.findAllByOrderByBeginTimeDesc(pageRequest);
 		long count = taskLogRepository.count();
 		return rtnPagingDataMap(page, currPageNo, count);
+	}
+
+	public int removeLog(String flag) {
+		long count = 0;
+		switch(flag) {
+			case "task":
+				count = taskLogRepository.count();
+				taskLogRepository.deleteAll();
+				break;
+			case "system":
+				count = systemLogRepository.count();
+				systemLogRepository.deleteAll();
+				break;
+		}
+		return (int)count;
+	}
+
+	@Transactional
+	public List<DeleteLog> findAllDeleteLog() {
+		return deleteLogRepository.findByOrderByDtDesc();
 	}
 
 	private HashMap<String, Object> rtnPagingDataMap(Page page, int currPageNo, long count) {
