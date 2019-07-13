@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 	<div th:fragment="modal">
 		<div class="modal fade small" id="registerJobGroup" tabindex="-1" role="dialog" aria-labelledby="registerJobGroupLabel" aria-hidden="true">
@@ -58,7 +58,7 @@
 						<input type="hidden" id="mailing" name="mailing"/>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">닫기</button>
-							<button type="submit" class="btn btn-sm btn-primary">저장</button>
+							<button type="submit" class="btn btn-sm btn-primary" sec:authorize="hasRole('DEVELOPER') or hasRole('SUPER_ADMIN')">저장</button>
 						</div>
 					</form>
 				</div>

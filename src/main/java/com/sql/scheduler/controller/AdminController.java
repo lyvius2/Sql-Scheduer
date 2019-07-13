@@ -14,6 +14,7 @@ import com.sql.scheduler.service.GroupService;
 import com.sql.scheduler.service.LoginAdminDetails;
 import com.sql.scheduler.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -66,6 +67,7 @@ public class AdminController {
 		return "admin";
 	}
 
+	@PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/admin/{toBeStatus}/{username}", method = RequestMethod.POST)
 	public String admin(@PathVariable("toBeStatus") AdminStatus toBeStatus,
 	                    @PathVariable("username") String username) {
@@ -76,6 +78,7 @@ public class AdminController {
 		return "redirect:/admin";
 	}
 
+	@PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/admin/developer/{username}", method = RequestMethod.POST)
 	@ResponseBody
 	public String chgDeveloperStatus(@PathVariable("username") String username) {
@@ -87,6 +90,7 @@ public class AdminController {
 		return "SUCCESS";
 	}
 
+	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/agree/{toBeStatus}/{jobAgreeSeq}",
 			method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	@ResponseBody

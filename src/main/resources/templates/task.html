@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="layout/default">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" layout:decorator="layout/default">
 <head>
 	<title>Task Handler</title>
 	<style>
@@ -85,7 +85,7 @@
 					</div>
 					<hr class="mb-4">
 					<div class="custom-control custom-checkbox">
-						<input type="hidden" name="testMode" th:value="*{testMode}?'N':*{testMode}"/>
+						<input type="hidden" name="testMode" th:value="*{testMode == 'Y'} ? 'Y':'N'"/>
 						<input type="checkbox" class="custom-control-input" name="chkTestMode" id="chkTestMode" th:checked="*{testMode == 'Y'}?:'checked'">
 						<label class="custom-control-label" for="chkTestMode">테스트 모드</label>
 					</div>
@@ -94,7 +94,7 @@
 					<input type="hidden" th:field="*{jobSeq}"/>
 					<input type="hidden" th:field="*{taskSeq}"/>
 					<input type="hidden" th:field="${group.groupSeq}"/>
-					<button class="btn btn-primary btn-block" type="submit">저장</button>
+					<button class="btn btn-primary btn-block" type="submit" sec:authorize="hasRole('DEVELOPER') or hasRole('SUPER_ADMIN')">저장</button>
 				</form>
 			</div>
 		</div>

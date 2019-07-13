@@ -15,15 +15,19 @@ import com.sql.scheduler.component.EmailSender;
 import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobGroup;
+import com.sql.scheduler.entity.TaskLog;
 import com.sql.scheduler.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -41,6 +45,9 @@ public class TaskController {
 	private EmailSender sender;
 
 	@Autowired
+	private TemplateEngine templateEngine;
+
+	@Autowired
 	private AdminService adminService;
 
 	@Autowired
@@ -51,6 +58,9 @@ public class TaskController {
 
 	@Autowired
 	private SchedulerService schedulerService;
+
+	@Autowired
+	private LogService logService;
 
 	@RequestMapping(value = "/")
 	public String index(Model model) {
@@ -66,6 +76,7 @@ public class TaskController {
 		return "redirect:../";
 	}
 
+	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/group", method = RequestMethod.POST)
 	public String group(@ModelAttribute @Valid JobGroup jobGroup, @AuthenticationPrincipal LoginAdminDetails admin, Errors errors) throws Exception {
 		boolean isNewJobGroup = true;
@@ -92,6 +103,7 @@ public class TaskController {
 		return gson.toJson(map);
 	}
 
+	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/group/{seq}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
 	@ResponseBody
 	public String removeGroup(@PathVariable Integer seq) throws Exception {
@@ -118,6 +130,7 @@ public class TaskController {
 		return "task";
 	}
 
+	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/task", method = RequestMethod.POST)
 	public String task(@ModelAttribute Job job, @AuthenticationPrincipal LoginAdminDetails admin) throws Exception {
 		if (job.getTaskSeq() == 0) {
@@ -132,13 +145,20 @@ public class TaskController {
 		if ((boolean)result.get("isConfirmMailingCase")) {
 			int registerSeq = (int)result.get("registerSeq");
 			List<Admin> checkers = adminService.findCheckers(admin.getUsername());
+			JobGroup jobGroup = groupService.findOne(resultJob.getGroupSeq());
 			checkers.stream().forEach(c -> {
 				taskService.save(resultJob.getJobSeq(), registerSeq, c.getUsername());
 				SimpleMailMessage message = new SimpleMailMessage();
 				message.setFrom(admin.getAdmin().getEmail());
 				message.setTo(c.getEmail());
-				message.setSubject("스케줄러 작업에 대한 쿼리 확인 메일입니다.");
-				message.setText("테스트 메일입니다.");
+
+				Context ctx = new Context(Locale.KOREA);
+				ctx.setVariable("name", admin.getAdmin().getName() + "(" + admin.getUsername() + ")");
+				ctx.setVariable("performing", resultJob.getPerforming());
+				ctx.setVariable("conditional", resultJob.getConditional());
+				ctx.setVariable("dbUrl", jobGroup.getDbUrl());
+				message.setText(templateEngine.process("mail/confirm-query", ctx));
+				message.setSubject("[BATCH] 스케줄러 작업에 대한 SQL쿼리 확인 요청");
 				sender.sendMail(message);
 			});
 		}
@@ -146,6 +166,7 @@ public class TaskController {
 		return String.format("redirect:/task/%s?group=%s", resultJob.getJobSeq(), resultJob.getGroupSeq());
 	}
 
+	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/task/{seq}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public String task(@PathVariable Optional<Integer> seq) {
@@ -172,15 +193,9 @@ public class TaskController {
 		return gson.toJson(resultMap);
 	}
 
-	@RequestMapping(value = "/test/{seq}")
+	@RequestMapping(value = "/taskHistory", produces = "application/json; charset=utf-8")
 	@ResponseBody
-	public String test(@PathVariable("seq") Optional<Integer> seq) {
-		if (seq.isPresent()) {
-			int result = taskService.countByUnagreedCase(seq.get());
-			HashMap<String, Object> map = new HashMap<>();
-			map.put("Result", result);
-			return gson.toJson(map);
-		}
-		return "Failure";
+	public String taskHistory(@RequestParam("seq") int jobSeq) {
+		return gson.toJson(logService.findTopByJobSeq(jobSeq));
 	}
 }

@@ -36,6 +36,10 @@ public class AdminService {
 		return adminRepository.findAll();
 	}
 
+	public List<Admin> findDevelopers() {
+		return adminRepository.findAllByType(AdminType.DEVELOPER);
+	}
+
 	public List<Admin> findCheckers(String administrator) {
 		Admin register = adminRepository.findByUsername(administrator);
 		String senderEmail = register.getEmail();

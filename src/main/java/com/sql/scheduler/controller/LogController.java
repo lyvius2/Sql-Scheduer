@@ -47,10 +47,16 @@ public class LogController {
 		return gson.toJson(logService.findAllDeleteLog());
 	}
 
-	@PreAuthorize("hasRole('ROLE_DEVELOPER')")
+	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/removeLog/{flag}", method = RequestMethod.DELETE)
 	@ResponseBody
 	public int removeLog(@PathVariable("flag") String flag, @AuthenticationPrincipal LoginAdminDetails admin) {
 		return logService.removeLog(flag);
+	}
+
+	@RequestMapping(value = "/deleteTask")
+	@ResponseBody
+	public String deleteTask() {
+		return gson.toJson(logService.beforeLog());
 	}
 }

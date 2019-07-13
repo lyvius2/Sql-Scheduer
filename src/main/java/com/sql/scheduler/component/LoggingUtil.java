@@ -53,6 +53,9 @@ public class LoggingUtil {
 					case "cron":
 						comment += "Cron 형식 유효성 체크 (JSON)";
 						break;
+					case "taskHistory":
+						comment += "최근 스케줄 실행 이력 (JSON)";
+						break;
 				}
 				break;
 			case "LoginController":

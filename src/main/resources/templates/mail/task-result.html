@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>스케줄러 작업 결과</title>
+</head>
+<body>
+<p><strong th:text="${groupName}">작업명</strong> 스케줄 작업 실행 결과입니다.</p>
+<table style="border: 1px solid #343a40; border-collapse: collapse;">
+	<thead>
+	<th style="border: 1px solid #343a40; padding: 10px; background-color: #4CAF50; color: white;">#</th>
+	<th style="border: 1px solid #343a40; padding: 10px; background-color: #4CAF50; color: white;">결과</th>
+	<th style="border: 1px solid #343a40; padding: 10px; background-color: #4CAF50; color: white;">테이블</th>
+	<th style="border: 1px solid #343a40; padding: 10px; background-color: #4CAF50; color: white;">Target Rows</th>
+	<th style="border: 1px solid #343a40; padding: 10px; background-color: #4CAF50; color: white;">시작</th>
+	<th style="border: 1px solid #343a40; padding: 10px; background-color: #4CAF50; color: white;">종료</th>
+	<th style="border: 1px solid #343a40; padding: 10px; background-color: #4CAF50; color: white;">소요시간</th>
+	</thead>
+	<tbody>
+	<tr style="border: 1px solid #343a40; padding: 10px;" th:each="task, stat : ${tasks}">
+		<th style="border: 1px solid #343a40; padding: 10px;" th:text="${stat.count}"></th>
+		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${task.resultStatus}"></td>
+		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${task.targetTable}"></td>
+		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${task.targetCount}"></td>
+		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${task.beginTime}"></td>
+		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${task.endTime}"></td>
+		<td style="border: 1px solid #343a40; padding: 10px;" th:text="|${task.proceedTime} ms|"></td>
+	</tr>
+	</tbody>
+</table>
+</body>
+</html>

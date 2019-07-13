@@ -20,6 +20,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -77,6 +79,15 @@ public class LogService {
 				break;
 		}
 		return (int)count;
+	}
+
+	public List<TaskLog> beforeLog() {
+		Date date = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		cal.add(Calendar.DATE, -4);
+		date = cal.getTime();
+		return taskLogRepository.findByTargetDataIsNotNullAndBeginTimeBefore(date);
 	}
 
 	@Transactional

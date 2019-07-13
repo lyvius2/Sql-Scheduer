@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>쿼리 확인 요청</title>
+</head>
+<body>
+<p>안녕하세요. <strong th:text="${name}">개발자</strong>님이 스케줄러로 수행할 쿼리를 등록하였습니다.</p>
+<table style="border: 1px solid #343a40; border-collapse: collapse;">
+	<tr>
+		<th style="border: 1px solid #343a40; padding: 10px; background-color: #4CAF50; color: white;">업데이트 SQL쿼리 원문</th>
+	</tr>
+	<tr>
+		<td style="border: 1px solid #343a40; padding: 10px;">
+			[[${performing}]]<br/>[[${conditional}]]
+		</td>
+	</tr>
+	<tr>
+		<th style="border: 1px solid #343a40; padding: 10px; background-color: #4CAF50; color: white;">이 쿼리가 수행되는 DB</th>
+	</tr>
+	<tr>
+		<td style="border: 1px solid #343a40; padding: 10px;">[[${dbUrl}]]</td>
+	</tr>
+</table>
+<p>이 작업에 대해 확인하여 주시고 스케줄러 Web UI에 접속해서 승인 또는 반려처리 해주시기 바랍니다.</p>
+</body>
+</html>

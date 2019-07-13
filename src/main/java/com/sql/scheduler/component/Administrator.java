@@ -9,4 +9,6 @@ import org.springframework.stereotype.Component;
 @Data
 public class Administrator {
 	private String mail;
+	private String deleteTargetDataLogCron;
+	private int deleteTargetDataBeforeDay;
 }

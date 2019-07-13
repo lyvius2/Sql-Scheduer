@@ -60,7 +60,8 @@
 								<a v-bind:href="'/task/' + item.jobSeq + '?group=' + item.groupSeq" v-text="item.targetTable"></a>
 							</td>
 							<td>
-								<a href="javascript:void(0)" v-text="item.targetCount" v-on:click="targetView(item.targetData)"></a>
+								<span v-text="item.targetCount" v-if="item.targetData == null"></span>
+								<a href="javascript:void(0)" v-text="item.targetCount" v-on:click="targetView(item.targetData)" v-if="item.targetData != null"></a>
 							</td>
 							<td><a href="javascript:void(0)" class="badge badge-secondary" v-if="item.resultStatus != 'NOTPERFORMANCE'" v-on:click="modal('ExecutedSQL', item.executedSql)">VIEW</a></td>
 							<td>{{item.beginTime|formatDate}}</td>
@@ -86,7 +87,7 @@
 							</nav>
 						</div>
 						<div class="p-2 bd-highlight">
-							<a href="javascript:removeLog('task')"  class="btn btn-sm btn-danger">로그삭제</a>
+							<a href="javascript:removeLog('task')"  class="btn btn-sm btn-danger" sec:authorize="hasRole('DEVELOPER') or hasRole('SUPER_ADMIN')">로그삭제</a>
 						</div>
 					</div>
 				</div>
@@ -158,7 +159,7 @@
 							</nav>
 						</div>
 						<div class="p-2 bd-highlight">
-							<a href="javascript:removeLog('system')" class="btn btn-sm btn-danger">로그삭제</a>
+							<a href="javascript:removeLog('system')" class="btn btn-sm btn-danger" sec:authorize="hasRole('DEVELOPER') or hasRole('SUPER_ADMIN')">로그삭제</a>
 						</div>
 					</div>
 				</div>
