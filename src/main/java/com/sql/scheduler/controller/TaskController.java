@@ -1,21 +1,15 @@
 package com.sql.scheduler.controller;
 
-import com.cronutils.descriptor.CronDescriptor;
-import com.cronutils.model.Cron;
-import com.cronutils.model.CronType;
-import com.cronutils.model.definition.CronDefinition;
-import com.cronutils.model.definition.CronDefinitionBuilder;
-import com.cronutils.parser.CronParser;
 import com.google.gson.Gson;
 import com.sql.scheduler.code.DBMS;
 import com.sql.scheduler.code.DayCode;
 import com.sql.scheduler.code.MonthCode;
 import com.sql.scheduler.component.AES256;
+import com.sql.scheduler.component.CronUtil;
 import com.sql.scheduler.component.EmailSender;
 import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobGroup;
-import com.sql.scheduler.entity.TaskLog;
 import com.sql.scheduler.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -177,19 +171,11 @@ public class TaskController {
 	@RequestMapping(value = "/chkCron", produces = "application/json; charset=utf-8")
 	@ResponseBody
 	public String cron(@RequestParam("cron") String cronStr) {
+		String parseResult = CronUtil.cronParser(cronStr);
 		HashMap<String, Object> resultMap = new HashMap<>();
 		resultMap.put("input", cronStr);
-		CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
-		CronParser cronParser = new CronParser(cronDefinition);
-		try {
-			Cron cron = cronParser.parse(cronStr).validate();
-			CronDescriptor descriptor = CronDescriptor.instance(Locale.KOREA);
-			resultMap.put("describe", descriptor.describe(cron));
-			resultMap.put("validate", true);
-		} catch(Exception e) {
-			e.getStackTrace();
-			resultMap.put("validate", false);
-		}
+		resultMap.put("validate", parseResult != null ? true : false);
+		if (parseResult != null) resultMap.put("describe", parseResult);
 		return gson.toJson(resultMap);
 	}
 
