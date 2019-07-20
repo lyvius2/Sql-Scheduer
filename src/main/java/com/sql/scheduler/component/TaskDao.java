@@ -22,13 +22,10 @@ import java.util.Map;
 @Component
 public class TaskDao {
 	@Autowired
-	private DataSourceAccess dataAccess;
-
-	@Autowired
 	private Gson gson;
 
-	public TaskLog executeTask(Job job, TaskLog taskLog) {
-		NamedParameterJdbcTemplate jdbcTemplate = this.dataAccess.getJdbcTemplate();
+	public TaskLog executeTask(Job job, TaskLog taskLog, DataSourceAccess dataAccess) {
+		NamedParameterJdbcTemplate jdbcTemplate = dataAccess.getJdbcTemplate();
 		StringBuffer targetDataQuery = new StringBuffer();
 		targetDataQuery.append("SELECT *\n");
 		targetDataQuery.append("FROM ");
@@ -53,7 +50,7 @@ public class TaskDao {
 				taskLog.setErrorMsg("업데이트 쿼리가 아닌 것으로 식별되어 쿼리가 실행되지 못했습니다.");
 				break;
 			default:
-				DataSourceTransactionManager transactionManager = this.dataAccess.getTransactionManager();
+				DataSourceTransactionManager transactionManager = dataAccess.getTransactionManager();
 				TransactionDefinition transactionDefinition = new DefaultTransactionDefinition();
 				TransactionStatus transactionStatus = transactionManager.getTransaction(transactionDefinition);
 

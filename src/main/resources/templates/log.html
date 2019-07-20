@@ -288,14 +288,19 @@
 		$('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
 			console.log($(e.target).attr('id'))
 			console.log($(e.relatedTarget).attr('id'))
-			if ($(e.target).attr('id') == 'nav-systemLog-tab' && logContent['system'].list.length == 0) {
-				getSystemLogList(1)
-				return
+			let tabName = $(e.target).attr('id')
+			switch(tabName) {
+				case 'nav-systemLog-tab':
+					getSystemLogList(1)
+					break
+				case 'nav-removeLog-tab':
+					getRemoveLogList()
+					break
+				case 'nav-taskLog-tab':
+					getTaskLogList(1)
+					break
 			}
-			if ($(e.target).attr('id') == 'nav-removeLog-tab' && logContent['remove'].list.length == 0) {
-				getRemoveLogList()
-				return
-			}
+			return
 		})
 
 		function removeLog(flag) {

@@ -42,9 +42,6 @@ public class QuartzJob extends QuartzJobBean {
 	private EmailSender sender;
 
 	@Autowired
-	private DataSourceAccess dataAccess;
-
-	@Autowired
 	private TaskService service;
 
 	@Autowired
@@ -65,10 +62,11 @@ public class QuartzJob extends QuartzJobBean {
 		log.info("===============================================================");
 		List<TaskLog> taskLogs = new ArrayList<>();
 		if (this.jobsInfo.getJob() != null) {
+			DataSourceAccess dataAccess = new DataSourceAccess();
 			dataAccess.dataSourceInitialize(this.jobsInfo.getDbUrl(), this.jobsInfo.getDbUsername(), dbPassword, this.jobsInfo.getDbms());
 			for (Job job : this.jobsInfo.getJob()) {
 				if (service.countByUnagreedCase(job.getJobSeq()) == 0) {
-					TaskLog taskResultLog = taskDao.executeTask(job, new TaskLog());
+					TaskLog taskResultLog = taskDao.executeTask(job, new TaskLog(), dataAccess);
 					taskLogs.add(taskResultLog);
 				}
 			}

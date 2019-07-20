@@ -83,7 +83,6 @@
 				type: 'DELETE',
 				contentType: 'json'
 			}).then(function(data) {
-				console.log(data)
 				if (data['success']) {
 					alert('삭제되었습니다.')
 					location.href = '/group'
@@ -111,8 +110,12 @@
 				})
 				.fail(function(e) {
 					console.log(e)
-					alert('데이터를 불러오는데 실패했습니다.\n' + e['responseJSON']['error'] + ' ('
-						+ e['responseJSON']['status'] + ')\n' + e['responseJSON']['message'])
+					try {
+						alert('데이터를 불러오는데 실패했습니다.\n' + e['responseJSON']['error'] + ' ('
+							+ e['responseJSON']['status'] + ')\n' + e['responseJSON']['message'])
+					} catch(e) {
+						location.href = '/'
+					}
 				})
 		}
 
