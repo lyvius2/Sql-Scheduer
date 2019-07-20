@@ -1,5 +1,6 @@
 package com.sql.scheduler.service;
 
+import com.google.gson.Gson;
 import com.sql.scheduler.code.AgreeStatus;
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobAgree;
@@ -9,14 +10,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
 public class TaskService {
+	@Autowired
+	private Gson gson;
+
 	@Autowired
 	private JobRepository jobRepository;
 
@@ -90,5 +96,26 @@ public class TaskService {
 	public List<JobAgree> findByUsernameAndAgreedNotOrderByRegDtDesc(String username) {
 		List<JobAgree> jobAgrees = agreeRepository.findByUsernameAndAgreedNotOrderByRegDtDesc(username, AgreeStatus.AGREED);
 		return jobAgrees.stream().filter(j -> j.getRegisterSeq() == agreeRepository.getMaxRegisterSeqByJobSeq(j.getJobSeq())).collect(Collectors.toList());
+	}
+
+	public List<HashMap> findByMyQueryAgreedStatus(String username) {
+		List<Job> jobs = Stream.of(jobRepository.findAllByRegUsernameAndModUsernameIsNull(username),
+				jobRepository.findAllByModUsername(username)).flatMap(job -> job.stream()).collect(Collectors.toList());
+		List<HashMap> mapList = new ArrayList<>();
+		if (jobs.size() > 0) {
+			for (Job j : jobs) {
+				int maxRegisterSeq = agreeRepository.getMaxRegisterSeqByJobSeq(j.getJobSeq());
+				List<JobAgree> jobAgrees = agreeRepository.findByJobSeqAndRegisterSeqOrderByRegDtDesc(j.getJobSeq(), maxRegisterSeq);
+				jobAgrees.stream().forEach(jobAgree -> {
+					HashMap map = gson.fromJson(gson.toJson(jobAgree), HashMap.class);
+					map.put("executeDt", jobAgree.getModDt() != null ? jobAgree.getModDt() : jobAgree.getRegDt());
+					map.put("targetTable", j.getTargetTable());
+					map.put("jobDescription", j.getJobDescription());
+					map.put("query", j.getPerforming() + "\n" + j.getConditional());
+					mapList.add(map);
+				});
+			}
+		}
+		return mapList;
 	}
 }

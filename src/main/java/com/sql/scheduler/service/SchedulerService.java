@@ -42,7 +42,7 @@ public class SchedulerService {
 
 		List<JobGroup> list = jobGroupRepository.findAllByUse("Y");
 		for (JobGroup j : list) {
-			startSchedule(j);
+			if (j.getJob().size() > 0) startSchedule(j);
 		}
 
 		if (administrator.getDeleteTargetDataBeforeDay() > 0 &&
@@ -70,6 +70,6 @@ public class SchedulerService {
 				break;
 			}
 		}
-		scheduler.deleteJob(trigger.getJobKey());
+		if (trigger != null) scheduler.deleteJob(trigger.getJobKey());
 	}
 }

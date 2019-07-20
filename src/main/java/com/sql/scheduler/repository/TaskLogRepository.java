@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 public interface TaskLogRepository extends MongoRepository<TaskLog, String> {
-	TaskLog findTopByJobSeq(int jobSeq);
 	Page<TaskLog> findAllByOrderByBeginTimeDesc(Pageable pageable);
 	List<TaskLog> findByTargetDataIsNotNullAndBeginTimeBefore(Date date);
 }

@@ -14,50 +14,6 @@
 			</div>
 		</div>
 
-		<div class="my-3 p-3 bg-white rounded shadow-sm">
-			<h6 class="border-bottom border-gray pb-2 mb-0">작업 SQL쿼리 검수</h6>
-			<div class="d-flex justify-content-center" th:if="${rejects.size() == 0}">
-				<p class="text-info">
-					<small>- 검수할 새 SQL작업이 없습니다. -</small>
-				</p>
-			</div>
-			<div class="row pt-3">
-				<div class="col-7">
-					<div class="list-group" id="list-tab" role="tablist">
-						<a th:each="reject : ${rejects}" th:href="${'#list-' + reject.jobAgree.jobAgreeSeq}"
-						   th:id="${'list-' + reject.jobAgree.jobAgreeSeq + '-list'}" th:attr="aria-controls=${reject.jobAgree.jobAgreeSeq}"
-						   class="list-group-item list-group-item-action" data-toggle="list" role="tab" >
-							<div class="d-flex justify-content-between">
-								<h6 class="mb-1" th:text="|${reject.jobAgree.agreed.getStatusName()} : ${reject.job.targetTable}|">
-									작업 테이블
-								</h6>
-								<small th:if="${reject.job['modUsername'] == null}"
-								       th:text="|*{reject.job.admin1.username}(*{reject.job.admin1.name})|">등록자 정보</small>
-								<small th:if="${reject.job['modUsername'] != null}"
-								       th:text="|*{reject.job.admin2.username}(*{reject.job.admin2.name})|">수정자 정보</small>
-							</div>
-							<p class="mb-1" th:text="${reject.job.jobDescription}">작업 설명</p>
-							<small th:text="${reject.job.dbUrl}">DB접속정보</small>
-						</a>
-					</div>
-				</div>
-				<div class="col-5">
-					<div class="tab-content" id="nav-tabContent">
-						<div th:each="reject : ${rejects}" th:id="${'list-' + reject.jobAgree.jobAgreeSeq}"
-						     th:attr="aria-labelledby=${'list-' + reject.jobAgree.jobAgreeSeq}" class="tab-pane fade" role="tabpanel">
-							<div class="d-flex mb-2" th:text="${reject.job.performing}">
-							</div>
-							<div class="d-flex" th:text="${reject.job.conditional}"></div>
-							<div class="d-flex justify-content-end" th:attr="data-seq=${reject.jobAgree.jobAgreeSeq}">
-								<button class="btn btn-sm btn-primary m-1">승인</button>
-								<button class="btn btn-sm btn-danger m-1">반려</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
 		<div class="my-3 p-3 bg-white rounded shadow-sm" sec:authorize="hasRole('SUPER_ADMIN')">
 			<h6 class="border-bottom border-gray pb-2 mb-0">사용자 관리</h6>
 			<div class="media text-muted pt-3" th:each="waiter : ${waiters}">
@@ -107,6 +63,87 @@
 					<span class="d-block" th:text="|@${leaving.type} / ${leaving.dept} / ${leaving.email} / ${leaving.regDt}|">@userinfo</span>
 				</div>
 			</div>
+		</div>
+
+		<div class="my-3 p-3 bg-white rounded shadow-sm">
+			<h6 class="border-bottom border-gray pb-2 mb-0">작업 SQL쿼리 검수</h6>
+			<div class="d-flex justify-content-center" th:if="${rejects.size() == 0}">
+				<p class="text-info">
+					<small>- 검수할 새 SQL작업이 없습니다. -</small>
+				</p>
+			</div>
+			<div class="row pt-3">
+				<div class="col-7">
+					<div class="list-group" id="list-tab" role="tablist">
+						<a th:each="reject, stat : ${rejects}" th:href="${'#list-' + reject.jobAgree.jobAgreeSeq}"
+						   th:id="${'list-' + reject.jobAgree.jobAgreeSeq + '-list'}" th:attr="aria-controls=${reject.jobAgree.jobAgreeSeq}"
+						   th:class="${stat.index == 0 ? 'list-group-item list-group-item-action active':'list-group-item list-group-item-action'}"
+						   data-toggle="list" role="tab">
+							<div class="d-flex justify-content-between">
+								<h6 class="mb-1" th:text="|${reject.jobAgree.agreed.getStatusName()} : ${reject.job.targetTable}|">
+									작업 테이블
+								</h6>
+								<small th:if="${reject.job['modUsername'] == null}"
+								       th:text="|*{reject.job.admin1.username}(*{reject.job.admin1.name})|">등록자 정보</small>
+								<small th:if="${reject.job['modUsername'] != null}"
+								       th:text="|*{reject.job.admin2.username}(*{reject.job.admin2.name})|">수정자 정보</small>
+							</div>
+							<p class="mb-1" th:text="${reject.job.jobDescription}">작업 설명</p>
+							<small th:text="${reject.job.dbUrl}">DB접속정보</small>
+						</a>
+					</div>
+				</div>
+				<div class="col-5">
+					<div class="tab-content" id="nav-tabContent">
+						<div th:each="reject, stat : ${rejects}" th:id="${'list-' + reject.jobAgree.jobAgreeSeq}"
+						     th:attr="aria-labelledby=${'list-' + reject.jobAgree.jobAgreeSeq}"
+						     th:class="${stat.index == 0 ? 'tab-pane fade show active':'tab-pane fade'}" role="tabpanel">
+							<div class="d-flex mb-2" th:utext="${#strings.replace(reject.job.performing, newLineChar, '<br/>')}">
+							</div>
+							<div class="d-flex" th:text="${#strings.replace(reject.job.conditional, newLineChar, '<br/>')}"></div>
+							<div class="d-flex justify-content-end" th:attr="data-seq=${reject.jobAgree.jobAgreeSeq}">
+								<button class="btn btn-sm btn-primary m-1">승인</button>
+								<button class="btn btn-sm btn-danger m-1">반려</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="my-3 p-3 bg-white rounded shadow-sm">
+			<h6 class="border-bottom border-gray pb-2 mb-0">등록 쿼리 승인 상태 현황</h6>
+			<table class="table table-sm small">
+				<thead class="thead-light">
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">상태</th>
+					<th scope="col">작업 내용</th>
+					<th scope="col">승인자</th>
+					<th scope="col">등록시각</th>
+					<th scope="col">Table</th>
+					<th scope="col">Query</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr th:if="${agreedStatus.size() ==0}">
+					<td colspan="7"><p class="text-info d-flex justify-content-center">- 스케줄 실행 이력이 없습니다. -</p></td>
+				</tr>
+				<tr th:each="status, stat : ${agreedStatus}">
+					<th scope="col" th:text="${stat.count}"></th>
+					<td>
+						<span class="badge badge-dark" th:if="${status.agreed == 'WAIT'}">대기</span>
+						<span class="badge badge-primary" th:if="${status.agreed == 'AGREED'}">승인</span>
+						<span class="badge badge-danger" th:if="${status.agreed == 'REJECT'}">반려</span>
+					</td>
+					<td th:text="${status.jobDescription}"></td>
+					<td th:text="${status.username}"></td>
+					<td th:text="${#dates.format(status.executeDt, 'yyyy-MM-dd HH:mm')}"></td>
+					<td th:text="${status.targetTable}"></td>
+					<td th:utext="${#strings.replace(status.query, newLineChar, '<br/>')}"></td>
+				</tr>
+				</tbody>
+			</table>
 		</div>
 		<form method="post"></form>
 	</main>

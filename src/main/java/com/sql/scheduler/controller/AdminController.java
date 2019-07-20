@@ -64,6 +64,8 @@ public class AdminController {
 					}
 				});
 		model.addAttribute("rejects", rejects);
+		model.addAttribute("agreedStatus", taskService.findByMyQueryAgreedStatus(admin.getUsername()));
+		model.addAttribute("newLineChar", '\n');
 		return "admin";
 	}
 

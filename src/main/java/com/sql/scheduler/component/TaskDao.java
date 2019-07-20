@@ -41,11 +41,11 @@ public class TaskDao {
 		String chkUpdateQuery = validateUpdateQuery(job, targetList.size());
 		switch(chkUpdateQuery) {
 			case "test":
-				taskLog.setResultStatus(ResultStatus.NOTPERFORMANCE);
+				taskLog.setResultStatus(ResultStatus.NO_ACTION);
 				taskLog.setErrorMsg("이 작업은 테스트 모드로 업데이트 쿼리가 실행되지 않습니다.");
 				break;
 			case "not.exist.target":
-				taskLog.setResultStatus(ResultStatus.NOTPERFORMANCE);
+				taskLog.setResultStatus(ResultStatus.NO_ACTION);
 				taskLog.setErrorMsg("대상 데이터가 없어 업데이트 쿼리를 실행하지 않습니다.");
 				break;
 			case "invalid.sql":

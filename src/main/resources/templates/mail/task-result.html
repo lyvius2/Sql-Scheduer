@@ -26,6 +26,9 @@
 		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${task.endTime}"></td>
 		<td style="border: 1px solid #343a40; padding: 10px;" th:text="|${task.proceedTime} ms|"></td>
 	</tr>
+	<tr style="border: 1px solid #343a40; padding: 10px;" th:if="${tasks.size() == 0}">
+		<td colspan="7">-작업 실행 이력이 없습니다.-</td>
+	</tr>
 	</tbody>
 </table>
 </body>

@@ -14,7 +14,13 @@ public class LoggingUtil {
 		Enumeration params = request.getParameterNames();
 		while (params.hasMoreElements()) {
 			String param = params.nextElement().toString();
-			map.put(param, request.getParameter(param));
+			if (param.toLowerCase().contains("password")) {
+				String masking = "";
+				for (int i = 0; i < param.length(); i++) {
+					masking += "*";
+				}
+				map.put(param, masking);
+			} else map.put(param, request.getParameter(param));
 		}
 		SystemLog systemLog = new SystemLog();
 		systemLog.setStatus(status);

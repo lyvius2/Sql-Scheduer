@@ -11,5 +11,6 @@ public interface JobAgreeRepository extends CrudRepository<JobAgree, Integer> {
 	@Query(value = "SELECT ifnull(MAX(register_seq), 0) FROM job_agree WHERE job_seq = ?1", nativeQuery = true)
 	int getMaxRegisterSeqByJobSeq(int jobSeq);
 	long countByJobSeqAndRegisterSeqAndAgreedNot(int jobSeq, int registerJob, AgreeStatus status);
+	List<JobAgree> findByJobSeqAndRegisterSeqOrderByRegDtDesc(int jobSeq, int registerJob);
 	List<JobAgree> findByUsernameAndAgreedNotOrderByRegDtDesc(String username, AgreeStatus status);
 }

@@ -54,7 +54,7 @@
 								<span class="badge badge-primary" v-if="item.resultStatus == 'SUCCESS'" v-text="item.resultStatus"></span>
 								<a href="javascript:void(0)" class="badge badge-danger" v-if="item.resultStatus == 'ERROR'" v-on:click="modal('Error Message', item.errorMsg)">{{item.resultStatus}}</a>
 								<a href="javascript:void(0)" class="badge badge-warning" v-if="item.resultStatus == 'FAILURE'" v-on:click="modal('Error Message', item.errorMsg)">{{item.resultStatus}}</a>
-								<a href="javascript:void(0)" class="badge badge-dark" v-if="item.resultStatus == 'NOTPERFORMANCE'" v-on:click="modal('Message', item.errorMsg)">{{item.resultStatus}}</a>
+								<a href="javascript:void(0)" class="badge badge-dark" v-if="item.resultStatus == 'NO_ACTION'" v-on:click="modal('Message', item.errorMsg)">{{item.resultStatus}}</a>
 							</td>
 							<td>
 								<a v-bind:href="'/task/' + item.jobSeq + '?group=' + item.groupSeq" v-text="item.targetTable"></a>
@@ -63,7 +63,7 @@
 								<span v-text="item.targetCount" v-if="item.targetData == null"></span>
 								<a href="javascript:void(0)" v-text="item.targetCount" v-on:click="targetView(item.targetData)" v-if="item.targetData != null"></a>
 							</td>
-							<td><a href="javascript:void(0)" class="badge badge-secondary" v-if="item.resultStatus != 'NOTPERFORMANCE'" v-on:click="modal('ExecutedSQL', item.executedSql)">VIEW</a></td>
+							<td><a href="javascript:void(0)" class="badge badge-secondary" v-if="item.resultStatus != 'NO_ACTION'" v-on:click="modal('ExecutedSQL', item.executedSql)">VIEW</a></td>
 							<td>{{item.beginTime|formatDate}}</td>
 							<td>{{item.endTime|formatDate}}</td>
 							<td>{{item.proceedTime}} ms</td>
@@ -299,17 +299,19 @@
 		})
 
 		function removeLog(flag) {
-			$.ajax({
-				url: '/removeLog/' + flag,
-				type: 'DELETE',
-				contentType: 'text'
-			}).then(function(data) {
-				if (flag == 'task') {
-					getTaskLogList(1)
-				} else {
-					getSystemLogList(1)
-				}
-			})
+			if (confirm('로그기록을 완전히 삭제하시겠습니까? 복구할 수 없습니다.')) {
+				$.ajax({
+					url: '/removeLog/' + flag,
+					type: 'DELETE',
+					contentType: 'text'
+				}).then(function(data) {
+					if (flag == 'task') {
+						getTaskLogList(1)
+					} else {
+						getSystemLogList(1)
+					}
+				})
+			}
 		}
 
 		function getRemoveLogList() {

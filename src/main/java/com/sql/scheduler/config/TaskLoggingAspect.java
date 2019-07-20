@@ -35,8 +35,10 @@ public class TaskLoggingAspect {
 
 	@AfterReturning(pointcut = "onJointCut()", returning = "taskLog")
 	public void onAfterReturningHandler(JoinPoint joinPoint, Object taskLog) {
-		((TaskLog)taskLog).setEndTime(new Date());
-		taskLogRepository.save((TaskLog)taskLog);
+		TaskLog taskLog1 = (TaskLog)taskLog;
+		taskLog1.setEndTime(new Date());
+		taskLog1.setProceedTime(taskLog1.getEndTime().getTime() - taskLog1.getBeginTime().getTime());
+		taskLogRepository.save(taskLog1);
 	}
 
 	@AfterThrowing(pointcut = "onJointCut()", throwing = "exceptionObj")

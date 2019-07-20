@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 public class JobGroup {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.TABLE)
 	@Column(name = "group_seq")
 	private int groupSeq;
 

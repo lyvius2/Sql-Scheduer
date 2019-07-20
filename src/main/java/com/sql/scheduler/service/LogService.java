@@ -56,7 +56,9 @@ public class LogService {
 	}
 
 	public TaskLog findTopByJobSeq(int jobSeq) {
-		return taskLogRepository.findTopByJobSeq(jobSeq);
+		Query query = new Query(Criteria.where("jobSeq").is(jobSeq)).with(Sort.by(new Order(Sort.Direction.DESC, "endTime"))).limit(1);
+		TaskLog taskLog = mongoOperations.findOne(query, TaskLog.class, "taskLog");
+		return taskLog;
 	}
 
 	public HashMap<String, Object> findAllTaskLog(int currPageNo) {
