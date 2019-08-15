@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.sql.scheduler.code.AdminStatus;
 import com.sql.scheduler.code.AdminType;
 import com.sql.scheduler.code.AgreeStatus;
+import com.sql.scheduler.component.Administrator;
 import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobAgree;
@@ -16,12 +17,12 @@ import com.sql.scheduler.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 import static java.util.stream.Collectors.toList;
 
@@ -34,6 +35,9 @@ import java.util.List;
 public class AdminController {
 	@Autowired
 	private Gson gson;
+
+	@Autowired
+	private Administrator administrator;
 
 	@Autowired
 	private AdminService adminService;
@@ -65,8 +69,33 @@ public class AdminController {
 				});
 		model.addAttribute("rejects", rejects);
 		model.addAttribute("agreedStatus", taskService.findByMyQueryAgreedStatus(admin.getUsername()));
+		model.addAttribute("administrator", administrator.getMail());
 		model.addAttribute("newLineChar", '\n');
 		return "admin";
+	}
+
+	@PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
+	@RequestMapping(value = "/admin", method = RequestMethod.POST)
+	public String chgPwd(Model model, HttpServletRequest request, @AuthenticationPrincipal LoginAdminDetails admin) {
+		boolean valid = true;
+		String username = request.getParameter("username");
+		String password = request.getParameter("password");
+		if (username == null || password == null) {
+			model.addAttribute("message", "접근이 잘못되었습니다.");
+			valid = false;
+			}
+		if (admin.getAuthorities().contains(new SimpleGrantedAuthority(String.format("ROLE_%s", AdminType.SUPER_ADMIN.name())))) model.addAttribute("message", "비밀번호가 초기화되었습니다.");
+		else {
+			model.addAttribute("message", "권한이 없습니다.");
+			valid = false;
+		}
+
+		if (valid) {
+			Admin admin1 = adminService.findOne(username);
+			admin1.setPassword(password);
+			adminService.save(admin1, true);
+		}
+		return "layout/alert";
 	}
 
 	@PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")

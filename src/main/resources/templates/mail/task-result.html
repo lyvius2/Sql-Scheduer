@@ -22,8 +22,8 @@
 		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${task.resultStatus}"></td>
 		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${task.targetTable}"></td>
 		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${task.targetCount}"></td>
-		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${task.beginTime}"></td>
-		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${task.endTime}"></td>
+		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${#dates.format(task.beginTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+		<td style="border: 1px solid #343a40; padding: 10px;" th:text="${#dates.format(task.endTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
 		<td style="border: 1px solid #343a40; padding: 10px;" th:text="|${task.proceedTime} ms|"></td>
 	</tr>
 	<tr style="border: 1px solid #343a40; padding: 10px;" th:if="${tasks.size() == 0}">

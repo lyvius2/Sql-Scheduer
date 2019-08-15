@@ -31,4 +31,12 @@ public class InitialJob extends QuartzJobBean {
 			repository.save(log);
 		}
 	}
+
+	public int getInterval() {
+		return interval;
+	}
+
+	public void setInterval(int interval) {
+		this.interval = interval;
+	}
 }

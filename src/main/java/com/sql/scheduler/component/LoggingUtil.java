@@ -65,12 +65,13 @@ public class LoggingUtil {
 				}
 				break;
 			case "LoginController":
-				switch(request.getMethod()) {
-					case "GET":
-						comment += "로그인 화면 접속";
+				switch(methodName) {
+					case "loginForm":
+						if (request.getMethod().equals("GET")) comment += "로그인 화면 접속";
+						else if (request.getMethod().equals("POST")) comment += "사용자 등록";
 						break;
-					case "POST":
-						comment += "사용자 등록";
+					case "password":
+						comment += "비밀번호 변경";
 						break;
 				}
 				break;
@@ -85,6 +86,9 @@ public class LoggingUtil {
 						break;
 					case "decision":
 						comment += "쿼리 승인/반려";
+						break;
+					case "chgPwd":
+						comment += "사용자 비밀번호 초기화";
 						break;
 				}
 				break;

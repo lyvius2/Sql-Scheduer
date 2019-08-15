@@ -128,22 +128,17 @@
 			$('.modal input#cron').val(data['cron'])
 			$('.modal input#groupSeq').val(data['groupSeq'])
 			if (data['mailing'] == 'Y') {
-				document.forms[0].chkMailing.checked = true
+				document.forms.jobGroup.chkMailing.checked = true
 				$('.modal input#mailing').val('Y')
 			} else {
-				document.forms[0].chkMailing.checked = false
+				document.forms.jobGroup.chkMailing.checked = false
 				$('.modal input#mailing').val('N')
 			}
 			$('div#registerJobGroup').modal('show')
 		}
 
 		function clearModalGroupData() {
-			$('.modal input#groupName').val('')
-			$('.modal input#dbUrl').val('')
-			$('.modal input#dbUsername').val('')
-			$('.modal input#dbPassword').val('')
-			$('.modal input#cron').val('')
-			$('.modal input#groupSeq').val('')
+			$('.modal input').val('')
 		}
 
 		function createTaskHistoryMark(status) {
@@ -174,7 +169,7 @@
 			let seq = $(item).attr('data-seq')
 			$.get('/taskHistory', {seq: seq}, function(res) {
 				if (res) {
-					$(item).append(createTaskHistoryMark(res['resultStatus']), $('<br>'), moment(res.endTime).format('YYYY-MM-DD hh:mm:ss'))
+					$(item).append(createTaskHistoryMark(res['resultStatus']), $('<br>'), moment(res.endTime).format('YYYY-MM-DD HH:mm:ss'))
 				} else {
 					$(item).text('최근 기록 없음')
 				}

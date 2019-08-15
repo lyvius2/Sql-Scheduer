@@ -67,7 +67,7 @@ public class TaskController {
 
 	@RequestMapping(value = "/group", method = RequestMethod.GET)
 	public String group() {
-		return "redirect:../";
+		return "redirect:/";
 	}
 
 	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")

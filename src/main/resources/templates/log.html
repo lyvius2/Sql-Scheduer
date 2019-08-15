@@ -222,7 +222,7 @@
 	</main>
 	<script layout:fragment="script">
 		Vue.filter('formatDate', function(value) {
-			if(value) return moment(value).format('YYYY-MM-DD hh:mm:ss')
+			if(value) return moment(value).format('YYYY-MM-DD HH:mm:ss')
 		})
 
 		let modalData = new Vue({

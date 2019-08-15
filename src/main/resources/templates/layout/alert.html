@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<title>Alert</title>
+	</head>
+	<body>
+		<form>
+			<input type="hidden" name="msg" th:value="${message}"/>
+		</form>
+		<script>
+			/*<![CDATA[*/
+			const message = document.forms[0].msg.value
+			alert(message)
+			history.back(-1)
+			/*]]>*/
+		</script>
+	</body>
+</html>
