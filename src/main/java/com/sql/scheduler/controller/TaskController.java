@@ -7,6 +7,7 @@ import com.sql.scheduler.code.MonthCode;
 import com.sql.scheduler.component.AES256;
 import com.sql.scheduler.component.CronUtil;
 import com.sql.scheduler.component.EmailSender;
+import com.sql.scheduler.component.SqlValidator;
 import com.sql.scheduler.entity.Admin;
 import com.sql.scheduler.entity.Job;
 import com.sql.scheduler.entity.JobGroup;
@@ -126,7 +127,13 @@ public class TaskController {
 
 	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/task", method = RequestMethod.POST)
-	public String task(@ModelAttribute Job job, @AuthenticationPrincipal LoginAdminDetails admin) throws Exception {
+	public String task(@ModelAttribute Job job, @AuthenticationPrincipal LoginAdminDetails admin, Model model) throws Exception {
+		if (!SqlValidator.isSQL(job.getPerforming() + job.getConditional())) {
+			model.addAttribute("message",
+					"SQL 쿼리문 적합성 검증에 실패했습니다.\n문구 오류가 없는지 다시 한번 확인하십시오.");
+			return "layout/alert";
+		}
+
 		if (job.getTaskSeq() == 0) {
 			job.setTaskSeq(taskService.countByGroupSeq(job.getGroupSeq()) + 1);
 			job.setRegUsername(admin.getUsername());
@@ -152,7 +159,7 @@ public class TaskController {
 				ctx.setVariable("conditional", resultJob.getConditional());
 				ctx.setVariable("dbUrl", jobGroup.getDbUrl());
 				message.setText(templateEngine.process("mail/confirm-query", ctx));
-				message.setSubject("[BATCH] 스케줄러 작업에 대한 SQL쿼리 확인 요청");
+				message.setSubject("[BATCH] 스케줄러 작업에 대한 SQL 쿼리 확인 요청");
 				sender.sendMail(message);
 			});
 		}

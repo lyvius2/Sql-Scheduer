@@ -131,7 +131,7 @@
 				</thead>
 				<tbody>
 				<tr th:if="${agreedStatus.size() ==0}">
-					<td colspan="7"><p class="text-info d-flex justify-content-center">- 스케줄 실행 이력이 없습니다. -</p></td>
+					<td colspan="7"><p class="text-info d-flex justify-content-center">- 승인 대기 목록이 없습니다. -</p></td>
 				</tr>
 				<tr th:each="status, stat : ${agreedStatus}">
 					<th scope="col" th:text="${stat.count}"></th>

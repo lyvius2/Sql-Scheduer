@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,6 +25,13 @@ public class TaskService {
 
 	@Autowired
 	private JobAgreeRepository agreeRepository;
+
+	private Comparator<HashMap<String, Object>> jobAgreeMapComparator = new Comparator<HashMap<String, Object>>() {
+		@Override
+		public int compare(HashMap<String, Object> o1, HashMap<String, Object> o2) {
+			return o1.get("executeDt").toString().compareTo(o2.get("executeDt").toString());
+		}
+	};
 
 	public Job findOne(int seq) {
 		Optional<Job> optionalJob = jobRepository.findById(seq);
@@ -98,10 +102,12 @@ public class TaskService {
 		return jobAgrees.stream().filter(j -> j.getRegisterSeq() == agreeRepository.getMaxRegisterSeqByJobSeq(j.getJobSeq())).collect(Collectors.toList());
 	}
 
-	public List<HashMap> findByMyQueryAgreedStatus(String username) {
-		List<Job> jobs = Stream.of(jobRepository.findAllByRegUsernameAndModUsernameIsNull(username),
-				jobRepository.findAllByModUsername(username)).flatMap(job -> job.stream()).collect(Collectors.toList());
-		List<HashMap> mapList = new ArrayList<>();
+	public List<HashMap<String, Object>> findByMyQueryAgreedStatus(String username) {
+		List<Job> jobs = Stream.of(
+				jobRepository.findAllByRegUsernameAndModUsernameIsNull(username), jobRepository.findAllByModUsername(username))
+				.flatMap(job -> job.stream())
+				.collect(Collectors.toList());
+		List<HashMap<String, Object>> mapList = new ArrayList<>();
 		if (jobs.size() > 0) {
 			for (Job j : jobs) {
 				int maxRegisterSeq = agreeRepository.getMaxRegisterSeqByJobSeq(j.getJobSeq());
@@ -116,6 +122,7 @@ public class TaskService {
 				});
 			}
 		}
+		Collections.sort(mapList, jobAgreeMapComparator.reversed());
 		return mapList;
 	}
 }
