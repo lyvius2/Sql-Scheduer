@@ -25,5 +25,6 @@ system.super.admin.deleteTargetDataBeforeDay=`삭제 데이터 최대 백업 일
 system.super.admin.dataBackupMaxRows=`삭제 데이터 최대 보관 Row수(설정된 Row수를 초과하면 백업을 하지 않고 삭제함)`  
 spring.data.mongodb.database=task=`로그를 적재할 MongoDB Instance명`
 2. `gradle build` 명령어로 빌드하여 war 파일 생성
-3. `java -jar scheduler-0.0.1.war` 명령어로 Deploy
-4. 웹브라우저에서 http://127.0.0.1:9001 로 접속
+3. MongoDB 서비스 시작(서버가 다르다면 별도 접속 주소 설정 필요)
+4. `java -jar scheduler-0.0.1.war` 명령어로 Deploy
+5. 웹브라우저에서 http://127.0.0.1:9001 로 접속
