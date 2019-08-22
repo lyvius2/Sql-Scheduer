@@ -2,6 +2,7 @@ package com.sql.scheduler.config;
 
 import com.google.gson.Gson;
 import nz.net.ultraq.thymeleaf.LayoutDialect;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.thymeleaf.TemplateEngine;
@@ -37,4 +38,11 @@ public class BeanConfig {
 		return templateEngine;
 	}
 
+	@Bean
+	public FilterRegistrationBean xssEscapeServletFilter() {
+		FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+		XssEscapeFilter xssEscapeFilter = new XssEscapeFilter();
+		filterRegistrationBean.setFilter(xssEscapeFilter);
+		return filterRegistrationBean;
+	}
 }

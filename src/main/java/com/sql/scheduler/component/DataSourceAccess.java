@@ -15,6 +15,13 @@ public class DataSourceAccess {
 	private DataSourceTransactionManager transactionManager;
 	private NamedParameterJdbcTemplate jdbcTemplate;
 
+	/**
+	 * Database 접속을 위한 객체 초기화
+	 * @param url
+	 * @param username
+	 * @param password
+	 * @param dbms
+	 */
 	public void dataSourceInitialize(String url, String username, String password, DBMS dbms) {
 		this.dataSource = new DriverManagerDataSource();
 		((DriverManagerDataSource) this.dataSource).setUrl(url);
@@ -25,6 +32,9 @@ public class DataSourceAccess {
 		this.jdbcTemplate = new NamedParameterJdbcTemplate(this.dataSource);
 	}
 
+	/**
+	 * Database 접속 닫기
+	 */
 	public void connectionClose() {
 		try {
 			this.jdbcTemplate = null;

@@ -11,6 +11,9 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * job_group(작업 그룹) 테이블
+ */
 @Entity
 @Table(indexes = {@Index(name = "index_job_groupSeq", columnList = "group_seq", unique = true)})
 @Data

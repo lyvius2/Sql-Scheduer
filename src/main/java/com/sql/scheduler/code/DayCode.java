@@ -1,5 +1,8 @@
 package com.sql.scheduler.code;
 
+/**
+ * 날짜 요일 코드
+ */
 public enum DayCode {
 	Sun("Sunday", "일요일", 1), Mon("Monday", "월요일", 2), Tue("Tuesday", "화요일", 3), Wed("Wednesday", "수요일", 4),
 	Thu("Thursday", "목요일", 5), Fri("Friday", "금요일", 6), Sat("Saturday", "토요일", 7);

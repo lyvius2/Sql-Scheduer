@@ -28,6 +28,13 @@ public class LoginController {
 	@Autowired
 	private AdminService service;
 
+	/**
+	 * 로그인 화면
+	 * @param error
+	 * @param request
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = "/loginForm")
 	public String loginForm(@RequestParam(value = "error", required = false) Optional<String> error, HttpServletRequest request, Model model) {
 		if (error.isPresent()) {
@@ -37,6 +44,13 @@ public class LoginController {
 		return "login";
 	}
 
+	/**
+	 * 로그인 처리
+	 * @param admin
+	 * @param request
+	 * @param errors
+	 * @return
+	 */
 	@RequestMapping(value = "/loginForm", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	@ResponseBody
 	public String loginForm(@ModelAttribute @Valid Admin admin, HttpServletRequest request, Errors errors) {
@@ -57,6 +71,13 @@ public class LoginController {
 		return gson.toJson(hashMap);
 	}
 
+	/**
+	 * 패스워드 변경
+	 * @param admin
+	 * @param password
+	 * @param passwordConfirm
+	 * @return
+	 */
 	@RequestMapping(value = "/password", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	@ResponseBody
 	public String password(@AuthenticationPrincipal LoginAdminDetails admin,

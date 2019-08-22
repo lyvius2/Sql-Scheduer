@@ -9,6 +9,13 @@ import java.util.HashMap;
 
 @Component
 public class LoggingUtil {
+	/**
+	 * 로그 데이터 생성
+	 * @param request
+	 * @param status
+	 * @param username
+	 * @return
+	 */
 	public SystemLog createLogging(HttpServletRequest request, ResultStatus status, String username) {
 		HashMap<String, Object> map = new HashMap<>();
 		Enumeration params = request.getParameterNames();
@@ -32,6 +39,13 @@ public class LoggingUtil {
 		return systemLog;
 	}
 
+	/**
+	 * Servlet Path에 따라 Log가 수행된 메뉴 표시
+	 * @param request
+	 * @param className
+	 * @param methodName
+	 * @return
+	 */
 	public String createActionLogComment(HttpServletRequest request, String className, String methodName) {
 		String comment = className + "." + methodName + " > ";
 		switch (className) {

@@ -33,6 +33,10 @@ public class SchedulerService {
 	@Autowired
 	private Administrator administrator;
 
+	/**
+	 * 애플리케이션 구동 시 자동 실행
+	 * @throws Exception
+	 */
 	@PostConstruct
 	public void start() throws Exception {
 		log.info("========================================================");

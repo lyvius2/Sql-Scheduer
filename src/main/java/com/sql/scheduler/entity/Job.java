@@ -9,6 +9,9 @@ import javax.persistence.*;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
+/**
+ * job(작업) 테이블
+ */
 @Entity
 @Table(indexes = {@Index(name = "index_jobSeq", columnList = "job_seq, group_seq", unique = true)})
 @Data
@@ -58,11 +61,11 @@ public class Job {
 	@Column(name = "mod_username")
 	private String modUsername;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 	@JoinColumnOrFormula(column = @JoinColumn(name = "reg_username", referencedColumnName = "username", insertable = false, updatable = false))
 	private Admin admin1;
 
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 	@JoinColumnOrFormula(column = @JoinColumn(name = "mod_username", referencedColumnName = "username", insertable = false, updatable = false))
 	private Admin admin2;
 

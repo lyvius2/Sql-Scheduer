@@ -11,12 +11,20 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 애플리케이션 구동 시 기존 저장되어 있던 작업 리스케줄링
+ */
 public class InitialJob extends QuartzJobBean {
 	private int interval;
 
 	@Autowired
 	private TaskLogRepository repository;
 
+	/**
+	 * 설정한 날짜 이전의 데이터 백업본 삭제
+	 * @param context
+	 * @throws JobExecutionException
+	 */
 	@Override
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 		Date date = new Date();

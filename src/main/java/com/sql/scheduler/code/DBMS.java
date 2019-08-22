@@ -1,5 +1,8 @@
 package com.sql.scheduler.code;
 
+/**
+ * 자원 DBMS
+ */
 public enum DBMS {
 	POSTGRESQL("PostgreSQL", "org.postgresql.Driver"),
 	MSSQL("MS SQL Server", "net.sf.log4jdbc.sql.jdbcapi.DriverSpy"),

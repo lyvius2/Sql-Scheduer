@@ -8,6 +8,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import javax.persistence.*;
 import java.util.Date;
 
+/**
+ * job_agree(작업 승인) 테이블
+ */
 @Entity
 @Table(indexes = {@Index(name = "index_jobAgree_jobSeq", columnList = "job_seq", unique = false)})
 @Data

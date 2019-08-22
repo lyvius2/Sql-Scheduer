@@ -5,6 +5,9 @@ import lombok.Data;
 import javax.persistence.*;
 import java.util.Date;
 
+/**
+ * delete_log(삭제 로그) 테이블
+ */
 @Entity
 @Table(indexes = {@Index(name = "index_delete_log", columnList = "seq", unique = true)})
 @Data

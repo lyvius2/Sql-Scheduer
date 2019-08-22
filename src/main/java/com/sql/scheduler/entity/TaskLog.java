@@ -8,6 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
+/**
+ * 작업 로그 Collection (MongoDB)
+ */
 @Data
 @Document(collection = "taskLog")
 public class TaskLog {

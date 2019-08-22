@@ -1,5 +1,8 @@
 package com.sql.scheduler.code;
 
+/**
+ * 사용자 상태
+ */
 public enum AdminStatus {
 	E("대기"), Y("사용"), N("미사용");
 

@@ -12,6 +12,12 @@ public class QuartzTriggerBuilder {
 	@Autowired
 	private AES256 aes256;
 
+	/**
+	 * 스케줄링 작업 생성
+	 * @param jobGroup
+	 * @return
+	 * @throws Exception
+	 */
 	public JobDetail buildJobDetail(JobGroup jobGroup) throws Exception {
 		JobDataMap dataMap = new JobDataMap();
 		dataMap.put("jobsInfo", jobGroup);
@@ -19,6 +25,12 @@ public class QuartzTriggerBuilder {
 		return JobBuilder.newJob(QuartzJob.class).withIdentity(String.format("%sJob", jobGroup.getGroupSeq())).usingJobData(dataMap).storeDurably().build();
 	}
 
+	/**
+	 * 스케줄링 트리거 생성
+	 * @param cron
+	 * @param groupSeq
+	 * @return
+	 */
 	public Trigger buildTrigger(String cron, int groupSeq) {
 		CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(cron)
 				.withMisfireHandlingInstructionFireAndProceed()

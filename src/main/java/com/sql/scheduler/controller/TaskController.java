@@ -57,6 +57,11 @@ public class TaskController {
 	@Autowired
 	private LogService logService;
 
+	/**
+	 * 작업 목록 화면
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping(value = "/")
 	public String index(Model model) {
 		model.addAttribute("groupList", groupService.findAllByUse("Y"));
@@ -71,6 +76,15 @@ public class TaskController {
 		return "redirect:/";
 	}
 
+	/**
+	 * 작업 그룹 등록
+	 * @comment 작업 그룹 신규 등록/수정 시 해당 작업이 스케줄링 된다.
+	 * @param jobGroup
+	 * @param admin
+	 * @param errors
+	 * @return
+	 * @throws Exception
+	 */
 	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/group", method = RequestMethod.POST)
 	public String group(@ModelAttribute @Valid JobGroup jobGroup, @AuthenticationPrincipal LoginAdminDetails admin, Errors errors) throws Exception {
@@ -90,6 +104,12 @@ public class TaskController {
 		return "redirect:/group";
 	}
 
+	/**
+	 * 작업 그룹 정보 (JSON)
+	 * @param seq
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = "/group/{seq}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	@ResponseBody
 	public String group(@PathVariable Integer seq) throws Exception {
@@ -98,6 +118,12 @@ public class TaskController {
 		return gson.toJson(map);
 	}
 
+	/**
+	 * 작업 그룹 삭제
+	 * @param seq
+	 * @return
+	 * @throws Exception
+	 */
 	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/group/{seq}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
 	@ResponseBody
@@ -113,6 +139,14 @@ public class TaskController {
 		return gson.toJson(map);
 	}
 
+	/**
+	 * 작업 상세 화면
+	 * @param seq
+	 * @param groupSeq
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
 	@RequestMapping(value = {"/task/{seq}", "/task"}, method = RequestMethod.GET)
 	public String task(@PathVariable Optional<Integer> seq, @RequestParam("group") int groupSeq, Model model) throws Exception {
 		JobGroup jobGroup = groupService.findOne(groupSeq);
@@ -125,6 +159,14 @@ public class TaskController {
 		return "task";
 	}
 
+	/**
+	 * 작업 상세 정보 등록/갱신
+	 * @param job
+	 * @param admin
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
 	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/task", method = RequestMethod.POST)
 	public String task(@ModelAttribute Job job, @AuthenticationPrincipal LoginAdminDetails admin, Model model) throws Exception {
@@ -167,6 +209,11 @@ public class TaskController {
 		return String.format("redirect:/task/%s?group=%s", resultJob.getJobSeq(), resultJob.getGroupSeq());
 	}
 
+	/**
+	 * 작업 삭제
+	 * @param seq
+	 * @return
+	 */
 	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/task/{seq}", method = RequestMethod.DELETE)
 	@ResponseBody
@@ -175,6 +222,11 @@ public class TaskController {
 		return "SUCCESS";
 	}
 
+	/**
+	 * Cron 값 유효성 체크 및 Parser
+	 * @param cronStr
+	 * @return
+	 */
 	@RequestMapping(value = "/chkCron", produces = "application/json; charset=utf-8")
 	@ResponseBody
 	public String cron(@RequestParam("cron") String cronStr) {
@@ -186,6 +238,11 @@ public class TaskController {
 		return gson.toJson(resultMap);
 	}
 
+	/**
+	 * 최근 작업 실행 내역
+	 * @param jobSeq
+	 * @return
+	 */
 	@RequestMapping(value = "/taskHistory", produces = "application/json; charset=utf-8")
 	@ResponseBody
 	public String taskHistory(@RequestParam("seq") int jobSeq) {

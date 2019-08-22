@@ -32,6 +32,14 @@ public class AES256 {
 		this.keySpec = keySpec;
 	}
 
+	/**
+	 * 암호화
+	 * @param str
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 * @throws GeneralSecurityException
+	 * @throws UnsupportedEncodingException
+	 */
 	public String AESEncoder(String str) throws NoSuchAlgorithmException, GeneralSecurityException, UnsupportedEncodingException{
 		Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
 		c.init(Cipher.ENCRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes()));
@@ -40,6 +48,14 @@ public class AES256 {
 		return enStr;
 	}
 
+	/**
+	 * 복호화
+	 * @param str
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 * @throws GeneralSecurityException
+	 * @throws UnsupportedEncodingException
+	 */
 	public String AESDecoder(String str) throws NoSuchAlgorithmException, GeneralSecurityException, UnsupportedEncodingException {
 		Cipher c = Cipher.getInstance("AES/CBC/PKCS5Padding");
 		c.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(iv.getBytes()));

@@ -10,6 +10,10 @@ public class EmailSender {
 	@Autowired
 	private JavaMailSender mailSender;
 
+	/**
+	 * 메일 발송
+	 * @param message
+	 */
 	public void sendMail(SimpleMailMessage message) {
 		mailSender.send(message);
 	}

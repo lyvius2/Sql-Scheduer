@@ -15,6 +15,9 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * Admin(사용자) 테이블
+ */
 @Entity
 @Table(indexes = {@Index(name = "index_admin_username", columnList = "username", unique = true)})
 @Data

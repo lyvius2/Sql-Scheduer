@@ -48,6 +48,12 @@ public class AdminController {
 	@Autowired
 	private TaskService taskService;
 
+	/**
+	 * 관리자(Admin) 화면
+	 * @param model
+	 * @param admin
+	 * @return
+	 */
 	@RequestMapping(value = "/admin", method = RequestMethod.GET)
 	public String admin(Model model, @AuthenticationPrincipal LoginAdminDetails admin) {
 		List<Admin> admins = adminService.findAll();
@@ -74,6 +80,13 @@ public class AdminController {
 		return "admin";
 	}
 
+	/**
+	 * 패스워드 변경
+	 * @param model
+	 * @param request
+	 * @param admin
+	 * @return
+	 */
 	@PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/admin", method = RequestMethod.POST)
 	public String chgPwd(Model model, HttpServletRequest request, @AuthenticationPrincipal LoginAdminDetails admin) {
@@ -98,6 +111,12 @@ public class AdminController {
 		return "layout/alert";
 	}
 
+	/**
+	 * 사용자 상태 변경
+	 * @param toBeStatus
+	 * @param username
+	 * @return
+	 */
 	@PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/admin/{toBeStatus}/{username}", method = RequestMethod.POST)
 	public String admin(@PathVariable("toBeStatus") AdminStatus toBeStatus,
@@ -109,6 +128,11 @@ public class AdminController {
 		return "redirect:/admin";
 	}
 
+	/**
+	 * 사용자 타입 변경 (개발자 / 비개발자)
+	 * @param username
+	 * @return
+	 */
 	@PreAuthorize("hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/admin/developer/{username}", method = RequestMethod.POST)
 	@ResponseBody
@@ -121,6 +145,13 @@ public class AdminController {
 		return "SUCCESS";
 	}
 
+	/**
+	 * 신규 등록 작업 승인/불승인 처리
+	 * @param toBeStatus
+	 * @param jobAgreeSeq
+	 * @param admin
+	 * @return
+	 */
 	@PreAuthorize("hasRole('ROLE_DEVELOPER') or hasRole('ROLE_SUPER_ADMIN')")
 	@RequestMapping(value = "/agree/{toBeStatus}/{jobAgreeSeq}",
 			method = RequestMethod.POST, produces = "application/json; charset=utf-8")
