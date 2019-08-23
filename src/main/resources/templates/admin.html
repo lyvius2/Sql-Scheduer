@@ -203,7 +203,7 @@
 			$('#updPwd label.col-form-label').text(username + ' 패스워드 초기화 :')
 			$('#updPwd input[name=username]').val(username)
 			$('#updPwd input[name=password]').val('')
-			$('.modal').modal('show')
+			$('#updPwd').modal('show')
 		})
 
 		$('#updPwd').on('shown.bs.modal', function() {
