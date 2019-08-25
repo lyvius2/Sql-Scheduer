@@ -23,7 +23,7 @@ system.super.admin.mail=`수퍼 관리자 메일`
 system.super.admin.deleteTargetDataLogCron=`데이터 삭제 쿼리를 수행 시 삭제 데이터를 일시 백업 후 삭제하는데 어느 시각에 삭제할 것인지(cron 형식)`  
 system.super.admin.deleteTargetDataBeforeDay=`삭제 데이터 최대 백업 일수`  
 system.super.admin.dataBackupMaxRows=`삭제 데이터 최대 보관 Row수(설정된 Row수를 초과하면 백업을 하지 않고 삭제함)`  
-spring.data.mongodb.database=task=`로그를 적재할 MongoDB Instance명`
+spring.data.mongodb.database=`로그를 적재할 MongoDB Instance명`
 2. `gradle build` 명령어로 빌드하여 war 파일 생성
 3. MongoDB 서비스 시작(서버가 다르다면 별도 접속 주소 설정 필요)
 4. `java -jar scheduler-0.0.1.war` 명령어로 Deploy
